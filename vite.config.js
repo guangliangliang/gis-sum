@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import less from 'less';
-
-// https://vite.dev/config/
+import { resolve } from "path";
 export default defineConfig({
   plugins: [vue()],
+  base: "./",
   css: {
     preprocessorOptions: {
       less: {
@@ -16,5 +15,20 @@ export default defineConfig({
     alias: {
       "@": "/src",
     },
+  },
+  build: {
+    assetsDir: "assets",
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+      },
+      output: {
+        assetFileNames: "assets/[name]-[hash][extname]",
+      },
+    },
+  },
+  server: {
+    port: 3000,
+    open: true,
   },
 });
