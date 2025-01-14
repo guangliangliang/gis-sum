@@ -28,6 +28,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: #000d4a url(./assets/image/screen/bg.jpg) center center;
+  background-size: cover;
 }
 
 h1 {
@@ -59,10 +61,16 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
+  /* max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  text-align: center; */
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+* {
+  box-sizing: border-box;
 }
 
 @media (prefers-color-scheme: light) {
