@@ -2,13 +2,13 @@
   <div class="dashboard">
     <div class="left-column">
       <ChartWrapper title="柱状图">
-        <v-chart class="chart" :option="barChartOption" />
+        <BaseChart class="chart" :chartOption="barChartOption" />
       </ChartWrapper>
       <ChartWrapper title="折线图">
-        <v-chart class="chart" :option="lineChartOption" />
+        <BaseChart class="chart" :chartOption="lineChartOption" />
       </ChartWrapper>
       <ChartWrapper title="折线图">
-        <v-chart class="chart" :option="lineChartOption" />
+        <BaseChart class="chart" :chartOption="lineChartOption" />
       </ChartWrapper>
     </div>
     <div class="center-column">
@@ -18,21 +18,21 @@
           <template #title>
             <h1 class="big-title">运城市大数据可视化平台</h1>
           </template>
-          <v-chart class="map-chart" :option="mapChartOption" />
+          <BaseChart class="map-chart" :chartOption="mapChartOption" />
         </ChartWrapper>
       </div>
       <div class="center-bottom">
         <ChartWrapper title="雷达图">
-          <v-chart class="chart" :option="radarChartOption" />
+          <BaseChart class="chart" :chartOption="radarChartOption" />
         </ChartWrapper>
       </div>
     </div>
     <div class="right-column">
       <ChartWrapper title="散点图">
-        <v-chart class="chart" :option="scatterChartOption" />
+        <BaseChart class="chart" :chartOption="scatterChartOption" />
       </ChartWrapper>
       <ChartWrapper title="饼图">
-        <v-chart class="chart" :option="pieChartOption" />
+        <BaseChart class="chart" :chartOption="pieChartOption" />
       </ChartWrapper>
     </div>
   </div>
@@ -86,6 +86,13 @@ const barChartOption = ref({
     type: "category",
     data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   },
+  grid:{
+    left: "10%",
+    right: "10%",
+    bottom: "10%",
+    top: "10%",
+    containLabel: true,
+  },
   yAxis: {
     type: "value",
   },
@@ -101,6 +108,13 @@ const lineChartOption = ref({
   xAxis: {
     type: "category",
     data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  },
+  grid:{
+    left: "10%",
+    right: "10%",
+    bottom: "10%",
+    top: "10%",
+    containLabel: true,
   },
   yAxis: {
     type: "value",
@@ -327,7 +341,7 @@ function toggleMapMode() {
 
   .map-chart {
     width: 100%;
-    height: 80%;
+    height: 100%;
   }
 }
 </style>
