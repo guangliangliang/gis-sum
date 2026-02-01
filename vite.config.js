@@ -54,14 +54,6 @@ export default defineConfig(({ mode }) => {
       include: ['mersenne-twister']
       // exclude: ['cesium']
     },
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            cesium: ['cesium']
-          }
-        }
-      }
-    }
+    build: {}
   }
 })
