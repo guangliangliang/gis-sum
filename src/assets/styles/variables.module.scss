@@ -1,0 +1,8 @@
+/* stylelint-disable property-no-unknown */
+@use 'variables';
+
+// 导出变量
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:export {
+  namespace: variables.$adminNamespace;
+}

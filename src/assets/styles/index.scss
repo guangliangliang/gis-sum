@@ -1,0 +1,9 @@
+@forward 'variables';
+@forward 'mixins';
+@forward 'var';
+
+@use './base.scss';
+
+body {
+  cursor: url('@/assets/images/mouse/arrows.png'), auto;
+}
