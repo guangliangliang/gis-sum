@@ -41,6 +41,7 @@
     <el-main :class="[appStore.collapse ? 'is-collapse' : '', appStore.mobile ? 'is-mobile' : '']">
       <router-view />
     </el-main>
+    <el-footer :height="30"> <BaseAQ /></el-footer>
   </el-container>
 </template>
 

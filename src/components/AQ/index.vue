@@ -14,8 +14,12 @@ defineOptions({
 </template>
 <style lang="scss" scope>
 .registration {
+  align-items: center;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  justify-content: center;
+
   a {
     color: #8a919f;
   }
