@@ -25,35 +25,38 @@ onMounted(async () => {
     // 添加控件
     mapInstance.getControlManager().addZoomControl().addFullscreenControl().addScaleControl()
 
-    // 添加示例点
-    mapInstance.getLayerManager().addPointLayer(
-      'sample-point',
-      [
-        [116.397428, 39.90923],
-        [116.410703, 39.919518],
-        [116.380362, 39.901079]
-      ],
-      {
-        radius: 8,
-        color: '#409eff',
-        opacity: 0.8
-      }
-    )
+    // 异步添加示例图层，不阻塞主流程
+    requestIdleCallback(() => {
+      // 添加示例点
+      mapInstance.getLayerManager().addPointLayer(
+        'sample-point',
+        [
+          [116.397428, 39.90923],
+          [116.410703, 39.919518],
+          [116.380362, 39.901079]
+        ],
+        {
+          radius: 8,
+          color: '#409eff',
+          opacity: 0.8
+        }
+      )
 
-    // 添加示例线
-    mapInstance.getLayerManager().addLineLayer(
-      'sample-line',
-      [
-        [116.397428, 39.90923],
-        [116.410703, 39.919518],
-        [116.380362, 39.901079]
-      ],
-      {
-        width: 3,
-        color: '#67c23a',
-        opacity: 0.8
-      }
-    )
+      // 添加示例线
+      mapInstance.getLayerManager().addLineLayer(
+        'sample-line',
+        [
+          [116.397428, 39.90923],
+          [116.410703, 39.919518],
+          [116.380362, 39.901079]
+        ],
+        {
+          width: 3,
+          color: '#67c23a',
+          opacity: 0.8
+        }
+      )
+    })
 
     console.log('Mapbox map loaded successfully')
   } catch (error) {

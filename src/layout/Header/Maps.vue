@@ -4,11 +4,12 @@
       class="menu-item"
       v-for="item in menuList"
       :key="item.id"
-      :class="{ active: activeMenu === item.path }"
-      @click="handleSelect(item.path)"
+      :class="{ active: activeMenu === item.type }"
+      @click="handleSelect(item.type)"
+      @mouseenter="preloadMap(item.type)"
       role="link"
       tabindex="0"
-      @keydown.enter="handleSelect(item.path)"
+      @keydown.enter="handleSelect(item.type)"
     >
       {{ item.name }}
     </span>
@@ -16,39 +17,36 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useMapStore } from '@/stores/map'
 
 defineOptions({
   name: 'Maps'
 })
 
-const route = useRoute()
-const router = useRouter()
-
-const activeMenu = ref('')
+const mapStore = useMapStore()
 
 // 基础菜单项
 const baseMenu = [
   {
     id: 'mapbox',
     name: 'Mapbox',
-    path: '/mapbox'
+    type: 'mapbox'
   },
   {
     id: 'openlayer',
     name: 'Openlayer',
-    path: '/openlayer'
+    type: 'openlayer'
   },
   {
     id: 'gaode',
     name: 'Gaode',
-    path: '/gaode'
+    type: 'gaode'
   },
   {
     id: 'cesium',
-    name: 'cesium',
-    path: '/cesium'
+    name: 'Cesium',
+    type: 'cesium'
   }
 ]
 
@@ -58,18 +56,20 @@ const menuList = computed(() => {
   return menus
 })
 
-const handleSelect = (index) => {
-  if (!index) return
-  router.push(index).catch(() => {})
+// 当前激活的菜单
+const activeMenu = computed(() => mapStore.getCurrentMapType)
+
+const handleSelect = (type) => {
+  if (!type || activeMenu.value === type) return
+  mapStore.switchMap(type)
 }
 
-watch(
-  () => route,
-  (val) => {
-    activeMenu.value = val.meta?.activePath ?? val.path
-  },
-  { immediate: true, deep: true }
-)
+// 预加载地图资源
+const preloadMap = (type) => {
+  // 仅预加载未打开过的地图
+  if (activeMenu.value === type) return
+  import(`@/views/${type}/index.vue`)
+}
 </script>
 
 <style lang="scss" scoped>

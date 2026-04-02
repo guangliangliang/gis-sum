@@ -1,4 +1,5 @@
 export * from './app'
+export * from './map'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 

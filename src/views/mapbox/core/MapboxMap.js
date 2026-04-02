@@ -34,17 +34,21 @@ class MapboxMap {
         ...this.options
       })
 
-      // 等待地图加载完成
-      await new Promise((resolve, reject) => {
-        this.map.on('load', resolve)
-        this.map.on('error', reject)
+      // 无需等待全量加载，实例创建后先返回
+      return new Promise((resolve) => {
+        // 样式加载完成后初始化工具类
+        this.map.on('style.load', () => {
+          this.initManagers()
+          console.log('Mapbox map initialized successfully')
+          resolve(this)
+        })
+
+        // 监听错误事件
+        this.map.on('error', (error) => {
+          console.error('Failed to initialize Mapbox map:', error)
+          throw error
+        })
       })
-
-      // 初始化工具类
-      this.initManagers()
-
-      console.log('Mapbox map initialized successfully')
-      return this
     } catch (error) {
       console.error('Failed to initialize Mapbox map:', error)
       throw error

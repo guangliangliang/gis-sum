@@ -1,234 +1,147 @@
 <template>
-  <el-container>
-    <template v-if="layout === 'classic'">
-      <o-header
-        :class="{
-          'top-left-header': !appStore.mobile,
-          'top-left-header-collapse': appStore.collapse && !appStore.mobile
-        }"
-      />
-      <div
-        :class="{
-          'sum-menu': true,
-          'sum-menu-is-collapse': appStore.collapse,
-          'sum-menu-is-mobile': appStore.mobile
-        }"
-      >
-        <TitleLogo />
-        <o-menu />
-      </div>
-    </template>
-    <template v-if="layout === 'topLeft'">
-      <div class="sum-header">
-        <TitleLogo />
-        <o-header />
-      </div>
-      <o-menu
-        style="position: absolute"
-        :class="{
-          'classic-menu-is-mobile': appStore.mobile
-        }"
-      />
-    </template>
-    <!-- 手机端打开菜单遮罩 -->
+  <div class="gis-layout">
+    <!-- 左侧菜单区域 -->
+    <aside
+      :class="{
+        sidebar: true,
+        'sidebar-collapse': appStore.collapse,
+        'sidebar-mobile': appStore.mobile
+      }"
+    >
+      <TitleLogo />
+      <Menu />
+    </aside>
+
+    <!-- 右侧主内容区域 -->
+    <div class="main-wrapper">
+      <!-- 顶部导航栏 -->
+      <o-header class="header" />
+
+      <!-- 地图主体区域 -->
+      <main class="main-content">
+        <MapContainer />
+      </main>
+
+      <!-- 底部 -->
+      <footer class="footer">
+        <BaseAQ />
+      </footer>
+    </div>
+
+    <!-- 手机端遮罩 -->
     <div
       v-if="appStore.mobile && !appStore.collapse"
       class="mobile-overlay"
       @click="handleClickOutside"
     ></div>
-    <Settings />
-    <!-- 主体内容 -->
-    <el-main :class="[appStore.collapse ? 'is-collapse' : '', appStore.mobile ? 'is-mobile' : '']">
-      <router-view />
-    </el-main>
-    <el-footer :height="30"> <BaseAQ /></el-footer>
-  </el-container>
+  </div>
 </template>
 
 <script setup>
 import { useAppStore } from '@/stores'
 import OHeader from './Header.vue'
-import OMenu from './Menu/Menu.vue'
-import { computed } from 'vue'
-import TitleLogo from '@/layout/TitleLogo.vue'
+import Menu from './Menu/Menu.vue'
+import TitleLogo from './TitleLogo.vue'
+import BaseAQ from './BaseAQ.vue'
+import MapContainer from '@/components/MapContainer/index.vue'
 
 const appStore = useAppStore()
-const layout = computed(() => appStore.getLayout)
+
 const handleClickOutside = () => {
   appStore.setCollapse(true)
 }
 </script>
 
 <style scoped lang="scss">
-.el-container {
-  height: 100%;
-}
-
-.el-header {
-  align-items: center;
-  //background-color: #162746;
-  border-bottom: 1px solid var(--el-border-color);
+.gis-layout {
   display: flex;
-  justify-content: space-between;
-  position: fixed;
-  width: 100%;
-  z-index: 1501;
-
-  p {
-    line-height: 60px;
-    margin: 0;
-  }
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
 }
 
-.top-left-header {
-  left: var(--left-menu-max-width);
-  transition: all 0.3s;
-  width: calc(100% - var(--left-menu-max-width));
-}
-
-.top-left-header-collapse {
-  left: var(--left-menu-min-width);
-  width: calc(100% - var(--left-menu-min-width));
-}
-
-.sum-menu {
-  border-right: 1px solid var(--el-border-color);
-  height: 100%;
-  position: absolute;
-  transition: all 0.3s;
+/* 左侧菜单 */
+.sidebar {
+  flex-shrink: 0;
   width: var(--left-menu-max-width);
+  height: 100%;
+  background: var(--el-bg-color);
+  border-right: 1px solid var(--el-border-color);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  z-index: 1000;
 
-  .menu-container {
-    border-right: none;
-    box-shadow: unset;
-    // top: 0;
-  }
-
-  :deep(.el-menu) {
-    background-color: unset;
-  }
-
-  .logo-title {
-    height: 60px;
-    justify-content: flex-start;
-    transition: all 0.3s;
-    width: var(--left-menu-max-width);
-  }
-
-  :deep(.logo-title .title) {
-    opacity: 1;
-    pointer-events: auto;
-    transition-delay: 0.3s; // 延迟展示
-    transition-duration: 0s; // 无动画渐变
-  }
-}
-
-.sum-menu-is-mobile {
-  background: white;
-  z-index: 9999;
-}
-
-.sum-menu-is-collapse.sum-menu-is-mobile {
-  // 同时存在两个类时生效
-  .logo-title {
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-.sum-menu-is-collapse {
-  width: var(--left-menu-min-width);
-
-  /* stylelint-disable-next-line no-descending-specificity */
-  .logo-title {
+  &.sidebar-collapse {
     width: var(--left-menu-min-width);
   }
 
-  :deep(.logo-title .title) {
-    opacity: 0;
-    pointer-events: none;
-    transition-delay: 0s;
-    transition-duration: 0s; // 立即隐藏
-    // display: none;
-  }
-}
+  &.sidebar-mobile {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 2000;
+    transform: translateX(0);
 
-.classic-menu-is-mobile {
-  background-color: var(--el-bg-color-overlay);
-}
-
-.sum-header {
-  border-bottom: 1px solid var(--el-border-color);
-  display: flex;
-  height: 60px;
-  position: fixed;
-  width: 100%;
-
-  :deep(.el-header) {
-    flex: 1 1 0%;
-    position: relative;
-    width: auto;
-  }
-}
-
-.aside {
-  background-color: var(--el-color-primary);
-  bottom: 0;
-  box-shadow: 0 2px 10px 0 rgb(0 0 0 / 10%);
-  left: 0;
-  position: fixed;
-  top: 0;
-  z-index: 100;
-}
-
-.el-main {
-  backface-visibility: hidden;
-  background-color: var(--app-content-bg-color);
-  height: 100%;
-  margin-left: var(--left-menu-max-width);
-  margin-top: 60px;
-  overflow: hidden;
-  padding: 0;
-  perspective: none;
-  position: relative;
-  transition: 0.3s margin-left ease-in-out;
-}
-
-html.dark {
-  .el-header {
-    background-color: var(--el-bg-color-overlay);
-    color: white;
-  }
-
-  .el-main {
-    background-color: var(--el-bg-color-overlay);
-  }
-}
-
-.mobile-overlay {
-  background-color: var(--el-color-black);
-  height: 100%;
-  left: 0;
-  opacity: 0.3;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 99;
-}
-
-.is-collapse {
-  margin-left: var(--left-menu-min-width);
-}
-
-.is-mobile {
-  margin-left: 0;
-}
-
-:deep(.main-scrollbar) {
-  & > .el-scrollbar__wrap {
-    & > .el-scrollbar__view {
-      padding: 10px;
+    &.sidebar-collapse {
+      transform: translateX(-100%);
     }
+  }
+}
+
+/* 右侧主内容区 */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 顶部导航栏 */
+.header {
+  flex-shrink: 0;
+  height: 60px;
+  background: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color);
+  z-index: 999;
+}
+
+/* 地图主体区域 */
+.main-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background: #f0f0f0;
+}
+
+/* 底部 */
+.footer {
+  flex-shrink: 0;
+  height: 30px;
+  background: var(--el-bg-color);
+  border-top: 1px solid var(--el-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 手机端遮罩 */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
+}
+
+/* 暗黑模式适配 */
+html.dark {
+  .main-content {
+    background: #1a1a1a;
   }
 }
 </style>

@@ -24,25 +24,28 @@ onMounted(async () => {
     // 添加控件
     mapInstance.getControlManager().addZoomControl().addFullscreenControl().addScaleControl()
 
-    // 直接使用经纬度坐标，MapLayerManager 会处理坐标转换
-    const points = [
-      [116.397428, 39.90923],
-      [116.410703, 39.919518],
-      [116.380362, 39.901079]
-    ]
+    // 异步添加示例图层，不阻塞主流程
+    requestIdleCallback(() => {
+      // 直接使用经纬度坐标，MapLayerManager 会处理坐标转换
+      const points = [
+        [116.397428, 39.90923],
+        [116.410703, 39.919518],
+        [116.380362, 39.901079]
+      ]
 
-    // 添加示例点
-    mapInstance.getLayerManager().addPointLayer('sample-point', points, {
-      radius: 8,
-      color: '#409eff',
-      opacity: 0.8
-    })
+      // 添加示例点
+      mapInstance.getLayerManager().addPointLayer('sample-point', points, {
+        radius: 8,
+        color: '#409eff',
+        opacity: 0.8
+      })
 
-    // 添加示例线
-    mapInstance.getLayerManager().addLineLayer('sample-line', points, {
-      width: 3,
-      color: '#67c23a',
-      opacity: 0.8
+      // 添加示例线
+      mapInstance.getLayerManager().addLineLayer('sample-line', points, {
+        width: 3,
+        color: '#67c23a',
+        opacity: 0.8
+      })
     })
 
     console.log('OpenLayers map loaded successfully')

@@ -30,27 +30,33 @@ class OpenlayerMap {
    */
   async init() {
     try {
-      // 初始化地图实例
-      this.map = new Map({
-        target: this.container,
-        layers: [
-          new TileLayer({
-            source: new OSM()
+      // 异步创建地图实例，避免阻塞主线程
+      return new Promise((resolve) => {
+        // 放到下一个宏任务执行，不阻塞UI渲染
+        setTimeout(() => {
+          // 初始化地图实例
+          this.map = new Map({
+            target: this.container,
+            layers: [
+              new TileLayer({
+                source: new OSM()
+              })
+            ],
+            view: new View({
+              center: fromLonLat(this.options.center),
+              zoom: this.options.zoom,
+              projection: this.options.projection
+            }),
+            ...this.options
           })
-        ],
-        view: new View({
-          center: fromLonLat(this.options.center),
-          zoom: this.options.zoom,
-          projection: this.options.projection
-        }),
-        ...this.options
+
+          // 初始化工具类
+          this.initManagers()
+
+          console.log('OpenLayers map initialized successfully')
+          resolve(this)
+        }, 0)
       })
-
-      // 初始化工具类
-      this.initManagers()
-
-      console.log('OpenLayers map initialized successfully')
-      return this
     } catch (error) {
       console.error('Failed to initialize OpenLayers map:', error)
       throw error
@@ -135,6 +141,17 @@ class OpenlayerMap {
       this.map.getView().setZoom(zoom)
     }
     return this
+  }
+
+  /**
+   * 获取当前缩放级别
+   * @returns {number|null} 当前缩放级别
+   */
+  getZoom() {
+    if (this.map) {
+      return this.map.getView().getZoom()
+    }
+    return null
   }
 
   /**

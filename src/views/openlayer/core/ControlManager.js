@@ -7,13 +7,35 @@ class ControlManager {
   }
 
   /**
-   * 添加默认控件
+   * 添加全屏控件
    * @returns {ControlManager} 当前实例
    */
-  addDefaultControls() {
-    const controls = defaultControls()
-    this.map.addControl(controls)
-    this.controls.set('default', controls)
+  addFullscreenControl() {
+    const fullscreenControl = new CustomFullScreen()
+    this.map.addControl(fullscreenControl)
+    this.controls.set('fullscreen', fullscreenControl)
+    return this
+  }
+
+  /**
+   * 切换全屏模式
+   * @returns {ControlManager} 当前实例
+   */
+  toggleFullscreen() {
+    const fullscreenControl = this.controls.get('fullscreen')
+    if (fullscreenControl && fullscreenControl.toggleFullscreen) {
+      fullscreenControl.toggleFullscreen()
+    } else {
+      // 如果控件不存在，使用原生API
+      const element = this.map.getTargetElement()
+      if (!document.fullscreenElement) {
+        element.requestFullscreen().catch((err) => {
+          console.error(`Error attempting to enable fullscreen: ${err.message}`)
+        })
+      } else {
+        document.exitFullscreen()
+      }
+    }
     return this
   }
 

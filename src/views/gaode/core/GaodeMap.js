@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import AMapLoader from '@amap/amap-jsapi-loader'
 import ControlManager from './ControlManager'
 import CoordinateHelper from './CoordinateHelper'
@@ -28,19 +29,40 @@ class GaodeMap {
    */
   async init() {
     try {
-      // 加载高德地图API
+      console.log('[GaodeMap] 开始加载高德地图 API...')
+      console.log('[GaodeMap] 配置信息:', {
+        key: this.options.key ? '已配置' : '未配置',
+        version: this.options.version,
+        container: this.container
+      })
+
+      // 检查容器是否有效
+      if (!this.container) {
+        throw new Error('地图容器元素不存在')
+      }
+
+      // 检查 API Key
+      if (!this.options.key) {
+        console.warn('[GaodeMap] 警告：未配置高德地图 API Key，可能导致加载失败')
+      }
+
+      // 加载高德地图 API
+      console.log('[GaodeMap] 调用 AMapLoader.load...')
       await AMapLoader.load({
         key: this.options.key,
         version: this.options.version,
         plugins: ['AMap.Scale', 'AMap.Zoom', 'AMap.Geolocation', 'AMap.MapType']
       })
+      console.log('[GaodeMap] 高德地图 API 加载成功')
 
       // 初始化地图实例
+      console.log('[GaodeMap] 创建 AMap.Map 实例...')
       this.map = new AMap.Map(this.container, {
         center: this.options.center,
         zoom: this.options.zoom,
         ...this.options
       })
+      console.log('[GaodeMap] 地图实例创建成功')
 
       // 初始化工具类
       this.initManagers()

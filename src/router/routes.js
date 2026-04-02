@@ -13,29 +13,19 @@ const routes = [
   {
     path: '/',
     name: 'Layout',
-    redirect: '/mapbox',
     component: () => import('@/layout/index.vue'),
-    children: []
+    meta: {
+      title: 'GIS地图平台'
+    }
   },
   {
     path: '/:pathMatch(.*)*',
     name: '404',
     component: () => import('@/views/404/index.vue'),
     meta: {
-      activePath: '/404'
+      title: '页面未找到'
     }
   }
 ]
-
-// 自动引入模块路由
-const routeModuleFiles = import.meta.glob('./modules/*.js', { eager: true })
-Object.keys(routeModuleFiles).forEach((key) => {
-  const module = routeModuleFiles[key]
-  if (Array.isArray(module.default)) {
-    module.default.forEach((route) => {
-      routes[0].children.push(route)
-    })
-  }
-})
 
 export default routes
