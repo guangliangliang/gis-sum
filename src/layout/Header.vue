@@ -8,7 +8,7 @@
           <Expand v-else />
         </el-icon>
       </div>
-      <div class="logo-title">
+      <div v-if="showLogo" class="logo-title">
         <img :src="logoSrc" class="logo-img" />
         <span class="title">{{ baseTitle }}</span>
       </div>
@@ -44,6 +44,13 @@ import OScreenfull from './Header/Screenfull.vue'
 import { useAppStore, useMapStore } from '@/stores'
 import { baseTitle } from '@/config'
 import logoSrc from '@/assets/images/login/logo.png'
+
+defineProps({
+  showLogo: {
+    type: Boolean,
+    default: true
+  }
+})
 
 const appStore = useAppStore()
 const mapStore = useMapStore()
