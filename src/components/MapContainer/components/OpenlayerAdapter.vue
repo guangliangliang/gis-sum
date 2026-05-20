@@ -5,11 +5,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import OpenlayerMap from '@/views/openlayer/core/OpenlayerMap'
+import { useMapStore } from '@/stores'
 
 const emit = defineEmits(['map-ready', 'map-error'])
 
 const mapContainer = ref(null)
 let mapInstance = null
+const mapStore = useMapStore()
 
 onMounted(async () => {
   try {
@@ -22,7 +24,11 @@ onMounted(async () => {
     await mapInstance.init()
 
     // 添加控件
-    mapInstance.getControlManager().addZoomControl().addFullscreenControl().addScaleControl()
+    mapInstance.getControlManager()
+      .addZoomControl()
+      .addFullscreenControl()
+      .addScaleControl()
+      .addMapSwitcherControl({ mapStore, currentMapType: 'openlayer' })
 
     // 通知父组件地图已就绪
     emit('map-ready', mapInstance)
