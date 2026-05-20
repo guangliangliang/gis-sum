@@ -1,7 +1,7 @@
 <template>
   <div class="menu-container">
     <!-- 当前地图状态 - 经典布局且不折叠时显示，或顶部左侧布局时显示 -->
-    <div v-if="!collapse || layout === 'topLeft'" class="map-status">
+    <div v-if="false" class="map-status">
       <div class="status-item">
         <span class="status-label">当前地图:</span>
         <span class="status-value">{{ currentMapName }}</span>
