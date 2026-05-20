@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import GaodeMap from '@/views/gaode/core/GaodeMap'
 
 const emit = defineEmits(['map-ready', 'map-error'])
@@ -33,11 +33,35 @@ onMounted(async () => {
     await mapInstance.init()
     console.log('[GaodeAdapter] 地图初始化成功')
 
+    // 使用 ControlManager 添加控件
+    console.log('[GaodeAdapter] 开始添加控件...')
+    try {
+      mapInstance.getControlManager()
+        .addScaleControl()
+        .addMapTypeControl()
+        .addGeolocationControl()
+      
+      console.log('[GaodeAdapter] 控件添加完成')
+    } catch (err) {
+      console.error('[GaodeAdapter] 控件添加失败:', err)
+    }
+
     // 通知父组件地图已就绪
     emit('map-ready', mapInstance)
   } catch (error) {
     console.error('[GaodeAdapter] 地图初始化失败:', error)
     emit('map-error', error)
+  }
+})
+
+onActivated(() => {
+  // 组件被激活时，更新地图尺寸
+  if (mapInstance && mapInstance.getMap) {
+    const map = mapInstance.getMap()
+    if (map && typeof map.setFitView === 'function') {
+      // 高德地图使用 setFitView 刷新视图
+      map.setFitView()
+    }
   }
 })
 

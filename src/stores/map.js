@@ -4,10 +4,10 @@ export const useMapStore = defineStore('map', {
   state: () => ({
     // 当前地图类型: 'openlayer' | 'mapbox' | 'gaode' | 'cesium'
     currentMapType: 'openlayer',
-    // 当前地图实例（OpenlayerMap/MapboxMap/GaodeMap/CesiumMap 等类实例）
-    mapInstance: null,
-    // 地图是否初始化完成
-    isReady: false,
+    // 各地图实例缓存
+    mapInstances: {},
+    // 各地图是否就绪
+    mapReadyStatus: {},
     // 地图容器DOM元素
     mapContainer: null
   }),
@@ -15,12 +15,12 @@ export const useMapStore = defineStore('map', {
   getters: {
     // 获取当前地图类型
     getCurrentMapType: (state) => state.currentMapType,
-    // 获取地图实例
-    getMapInstance: (state) => state.mapInstance,
+    // 获取当前地图实例
+    getMapInstance: (state) => state.mapInstances[state.currentMapType] || null,
     // 获取地图容器
     getMapContainer: (state) => state.mapContainer,
-    // 判断地图是否就绪
-    isMapReady: (state) => state.isReady && state.mapInstance !== null
+    // 判断当前地图是否就绪
+    isMapReady: (state) => state.mapReadyStatus[state.currentMapType] && state.mapInstances[state.currentMapType] !== null
   },
 
   actions: {
@@ -32,9 +32,6 @@ export const useMapStore = defineStore('map', {
       if (this.currentMapType === type) {
         return
       }
-      // 缓存地图实例，不再切换时销毁，保持复用
-      this.mapInstance = null
-      this.isReady = false
       this.currentMapType = type
       console.log(`[MapStore] 切换地图类型为: ${type}`)
     },
@@ -44,9 +41,9 @@ export const useMapStore = defineStore('map', {
      * @param {Object} instance - 地图实例对象
      */
     setMapInstance(instance) {
-      this.mapInstance = instance
-      this.isReady = true
-      console.log('[MapStore] 地图实例已设置')
+      this.mapInstances[this.currentMapType] = instance
+      this.mapReadyStatus[this.currentMapType] = true
+      console.log(`[MapStore] ${this.currentMapType} 地图实例已设置`)
     },
 
     /**
@@ -61,11 +58,11 @@ export const useMapStore = defineStore('map', {
      * 清除地图实例
      */
     clearMapInstance() {
-      if (this.mapInstance && typeof this.mapInstance.destroy === 'function') {
-        this.mapInstance.destroy()
+      if (this.mapInstances[this.currentMapType] && typeof this.mapInstances[this.currentMapType].destroy === 'function') {
+        this.mapInstances[this.currentMapType].destroy()
       }
-      this.mapInstance = null
-      this.isReady = false
+      this.mapInstances[this.currentMapType] = null
+      this.mapReadyStatus[this.currentMapType] = false
       console.log('[MapStore] 地图实例已清除')
     }
   }

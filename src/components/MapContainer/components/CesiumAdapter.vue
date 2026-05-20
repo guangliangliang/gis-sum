@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import CesiumMap from '@/views/cesium/core/CesiumMap'
 
 const emit = defineEmits(['map-ready', 'map-error'])
@@ -28,6 +28,16 @@ onMounted(async () => {
   } catch (error) {
     console.error('[CesiumAdapter] 地图初始化失败:', error)
     emit('map-error', error)
+  }
+})
+
+onActivated(() => {
+  // 组件被激活时，Cesium通常会自动处理，但可以尝试强制重排
+  if (mapInstance && mapInstance.getViewer) {
+    const viewer = mapInstance.getViewer()
+    if (viewer && viewer.scene && typeof viewer.scene.requestRender === 'function') {
+      viewer.scene.requestRender()
+    }
   }
 })
 

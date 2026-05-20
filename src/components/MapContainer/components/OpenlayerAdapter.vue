@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import OpenlayerMap from '@/views/openlayer/core/OpenlayerMap'
 
 const emit = defineEmits(['map-ready', 'map-error'])
@@ -21,13 +21,24 @@ onMounted(async () => {
 
     await mapInstance.init()
 
-    // 控件暂不添加
+    // 添加控件
+    mapInstance.getControlManager().addZoomControl().addFullscreenControl().addScaleControl()
 
     // 通知父组件地图已就绪
     emit('map-ready', mapInstance)
   } catch (error) {
     console.error('[OpenlayerAdapter] 地图初始化失败:', error)
     emit('map-error', error)
+  }
+})
+
+onActivated(() => {
+  // 组件被激活时，更新地图尺寸
+  if (mapInstance && mapInstance.getMap) {
+    const map = mapInstance.getMap()
+    if (map && typeof map.updateSize === 'function') {
+      map.updateSize()
+    }
   }
 })
 

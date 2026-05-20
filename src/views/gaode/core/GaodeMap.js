@@ -51,7 +51,7 @@ class GaodeMap {
       await AMapLoader.load({
         key: this.options.key,
         version: this.options.version,
-        plugins: ['AMap.Scale', 'AMap.Zoom', 'AMap.Geolocation', 'AMap.MapType']
+        plugins: ['AMap.Scale', 'AMap.Geolocation', 'AMap.MapType']
       })
       console.log('[GaodeMap] 高德地图 API 加载成功')
 

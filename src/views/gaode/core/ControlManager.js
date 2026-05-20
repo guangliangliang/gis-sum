@@ -5,18 +5,6 @@ class ControlManager {
   }
 
   /**
-   * 添加缩放控件
-   * @param {Object} options 控件选项
-   * @returns {ControlManager} 当前实例
-   */
-  addZoomControl(options = {}) {
-    const control = new AMap.Zoom({ ...options })
-    this.map.addControl(control)
-    this.controls.set('zoom', control)
-    return this
-  }
-
-  /**
    * 添加比例尺控件
    * @param {Object} options 控件选项
    * @returns {ControlManager} 当前实例

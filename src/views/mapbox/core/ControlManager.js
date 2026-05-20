@@ -40,7 +40,7 @@ class ControlManager {
       maxWidth: options.maxWidth || 100,
       unit: options.unit || 'metric'
     })
-    this.map.addControl(control, options.position || 'bottom-left')
+    this.map.addControl(control, options.position || 'bottom-right')
     this.controls.set('scale', control)
     return this
   }

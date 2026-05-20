@@ -1,42 +1,9 @@
-import { defaults as defaultControls, FullScreen, ScaleLine, Zoom } from 'ol/control'
+import { FullScreen, ScaleLine, Zoom } from 'ol/control'
 
 class ControlManager {
   constructor(map) {
     this.map = map
     this.controls = new Map()
-  }
-
-  /**
-   * 添加全屏控件
-   * @returns {ControlManager} 当前实例
-   */
-  addFullscreenControl() {
-    const fullscreenControl = new CustomFullScreen()
-    this.map.addControl(fullscreenControl)
-    this.controls.set('fullscreen', fullscreenControl)
-    return this
-  }
-
-  /**
-   * 切换全屏模式
-   * @returns {ControlManager} 当前实例
-   */
-  toggleFullscreen() {
-    const fullscreenControl = this.controls.get('fullscreen')
-    if (fullscreenControl && fullscreenControl.toggleFullscreen) {
-      fullscreenControl.toggleFullscreen()
-    } else {
-      // 如果控件不存在，使用原生API
-      const element = this.map.getTargetElement()
-      if (!document.fullscreenElement) {
-        element.requestFullscreen().catch((err) => {
-          console.error(`Error attempting to enable fullscreen: ${err.message}`)
-        })
-      } else {
-        document.exitFullscreen()
-      }
-    }
-    return this
   }
 
   /**
