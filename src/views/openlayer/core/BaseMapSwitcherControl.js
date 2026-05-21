@@ -73,7 +73,7 @@ class BaseMapSwitcherControl extends Control {
         cursor: pointer;
       `
 
-      if (item.label === this.currentImage) {
+      if (item.label === this.currentImage && item.label !== 'OSM') {
         const checkboxWrapper = document.createElement('div')
         checkboxWrapper.style.cssText = `
           padding: 4px;
