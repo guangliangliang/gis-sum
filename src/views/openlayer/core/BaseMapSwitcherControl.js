@@ -5,6 +5,8 @@ class BaseMapSwitcherControl extends Control {
   constructor(options = {}) {
     const element = document.createElement('div')
     element.className = 'ol-unselectable ol-control ol-base-map-switcher'
+    element.style.top = '80px'
+    element.style.right = '10px'
 
     super({
       element,
