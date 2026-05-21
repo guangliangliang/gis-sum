@@ -35,6 +35,14 @@ import { useMapStore } from '@/stores'
 import { stationData } from './stationData'
 import { useRoute } from 'vue-router'
 import { Plus, Delete } from '@element-plus/icons-vue'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import Style from 'ol/style/Style'
+import Icon from 'ol/style/Icon'
+import Overlay from 'ol/Overlay'
+import { fromLonLat } from 'ol/proj'
 
 const mapStore = useMapStore()
 const route = useRoute()
@@ -47,123 +55,129 @@ let popupOverlay = null
 let clickHandler = null
 
 function addStationMarkers() {
-  if (!mapInstance.value) return;
-  const map = mapInstance.value.getMap();
-  if (!map) return;
+  if (!mapInstance.value) {
+    console.warn('地图实例未就绪')
+    return
+  }
+  const map = mapInstance.value.getMap()
+  if (!map) {
+    console.warn('地图对象未就绪')
+    return
+  }
 
-  const source = new window.ol.source.Vector();
+  const source = new VectorSource()
 
   stationData.forEach(station => {
-    const feature = new window.ol.Feature({
-      geometry: new window.ol.geom.Point(window.ol.proj.fromLonLat([station.lng, station.lat])),
+    const feature = new Feature({
+      geometry: new Point(fromLonLat([station.lng, station.lat])),
       station: station
-    });
-    source.addFeature(feature);
-  });
+    })
+    source.addFeature(feature)
+  })
 
-  const style = new window.ol.style.Style({
-    image: new window.ol.style.Icon({
+  const style = new Style({
+    image: new Icon({
       src: "/marker.svg",
       scale: 1,
       anchor: [0.5, 1],
       anchorOrigin: 'bottom-left'
     })
-  });
+  })
 
-  stationLayer = new window.ol.layer.Vector({
+  stationLayer = new VectorLayer({
     source: source,
     style: style,
     zIndex: 200
-  });
+  })
 
-  map.addLayer(stationLayer);
-  initPopup(map);
+  map.addLayer(stationLayer)
+  initPopup(map)
 
   clickHandler = function(event) {
-    const features = map.getFeaturesAtPixel(event.pixel);
+    const features = map.getFeaturesAtPixel(event.pixel)
     if (features && features.length > 0) {
-      const feature = features.find(f => f.get('station'));
+      const feature = features.find(f => f.get('station'))
       if (feature) {
-        const station = feature.get('station');
-        showPopup(station);
+        const station = feature.get('station')
+        showPopup(station)
       }
     } else {
-      if (popupOverlay) popupOverlay.setPosition(undefined);
-      activeStation.value = null;
+      if (popupOverlay) popupOverlay.setPosition(undefined)
+      activeStation.value = null
     }
-  };
-  map.on('click', clickHandler);
+  }
+  map.on('click', clickHandler)
 
-  markersAdded.value = true;
+  markersAdded.value = true
 }
 
 function removeStationMarkers() {
-  if (!mapInstance.value) return;
-  const map = mapInstance.value.getMap();
-  if (!map) return;
+  if (!mapInstance.value) return
+  const map = mapInstance.value.getMap()
+  if (!map) return
 
   if (stationLayer) {
-    map.removeLayer(stationLayer);
-    stationLayer = null;
+    map.removeLayer(stationLayer)
+    stationLayer = null
   }
 
   if (popupOverlay) {
-    map.removeOverlay(popupOverlay);
-    popupOverlay = null;
-    const el = document.getElementById('popup');
-    if (el && el.parentNode) el.parentNode.removeChild(el);
+    map.removeOverlay(popupOverlay)
+    popupOverlay = null
+    const el = document.getElementById('popup')
+    if (el && el.parentNode) el.parentNode.removeChild(el)
   }
 
   if (clickHandler) {
-    map.un('click', clickHandler);
-    clickHandler = null;
+    map.un('click', clickHandler)
+    clickHandler = null
   }
 
-  markersAdded.value = false;
-  activeStation.value = null;
+  markersAdded.value = false
+  activeStation.value = null
 }
 
 function handleStationClick(station) {
-  if (!markersAdded.value) return;
-  activeStation.value = station;
-  flyToStation(station);
-  showPopup(station);
+  if (!markersAdded.value) return
+  activeStation.value = station
+  flyToStation(station)
+  showPopup(station)
 }
 
 function flyToStation(station) {
-  if (!mapInstance.value) return;
-  const map = mapInstance.value.getMap();
-  if (!map) return;
+  if (!mapInstance.value) return
+  const map = mapInstance.value.getMap()
+  if (!map) return
   map.getView().animate({
-    center: window.ol.proj.fromLonLat([station.lng, station.lat]),
+    center: fromLonLat([station.lng, station.lat]),
     zoom: 15,
     duration: 1000
-  });
+  })
 }
 
 function showPopup(station) {
-  if (!mapInstance.value) return;
-  const map = mapInstance.value.getMap();
-  if (!map) return;
-  activeStation.value = station;
+  if (!mapInstance.value) return
+  const map = mapInstance.value.getMap()
+  if (!map) return
+  activeStation.value = station
 
-  const popupContent = document.getElementById('popup-content');
+  const popupContent = document.getElementById('popup-content')
   if (popupContent) {
-    popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>';
+    popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
   }
 
   if (popupOverlay) {
-    popupOverlay.setPosition(window.ol.proj.fromLonLat([station.lng, station.lat]));
+    popupOverlay.setPosition(fromLonLat([station.lng, station.lat]))
   }
 }
 
 function initPopup(map) {
-  let popupElement = document.getElementById('popup');
+  let popupElement = document.getElementById('popup')
   if (!popupElement) {
-    popupElement = document.createElement('div');
-    popupElement.id = 'popup';
-    popupElement.innerHTML = '<div id="popup-content"></div><div id="popup-closer" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:20px;line-height:1;color:#666;">×</div>';
-    document.body.appendChild(popupElement);
+    popupElement = document.createElement('div')
+    popupElement.id = 'popup'
+    popupElement.innerHTML = '<div id="popup-content"></div><div id="popup-closer" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:20px;line-height:1;color:#666;">×</div>'
+    document.body.appendChild(popupElement)
 
     Object.assign(popupElement.style, {
       position: 'absolute',
@@ -174,32 +188,32 @@ function initPopup(map) {
       marginTop: '-15px',
       minWidth: '240px',
       maxWidth: '320px'
-    });
+    })
 
-    const closer = document.getElementById('popup-closer');
+    const closer = document.getElementById('popup-closer')
     if (closer) {
       closer.onclick = function() {
-        if (popupOverlay) popupOverlay.setPosition(undefined);
-        activeStation.value = null;
-        return false;
-      };
+        if (popupOverlay) popupOverlay.setPosition(undefined)
+        activeStation.value = null
+        return false
+      }
     }
   }
 
-  if (popupOverlay) return;
-  popupOverlay = new window.ol.Overlay({
+  if (popupOverlay) return
+  popupOverlay = new Overlay({
     element: popupElement,
     autoPan: { animation: { duration: 250 } },
     autoPanMargin: 20
-  });
-  map.addOverlay(popupOverlay);
+  })
+  map.addOverlay(popupOverlay)
 }
 
 watch(() => route.path, newPath => {
-  if (newPath !== '/station') removeStationMarkers();
-}, { immediate: true });
+  if (newPath !== '/station') removeStationMarkers()
+}, { immediate: true })
 
-onUnmounted(() => removeStationMarkers());
+onUnmounted(() => removeStationMarkers())
 </script>
 
 <style scoped lang="scss">
