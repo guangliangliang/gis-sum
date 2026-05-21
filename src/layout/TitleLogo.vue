@@ -19,7 +19,8 @@ const collapse = computed(() => appStore.getCollapse)
 
 <style scoped lang="scss">
 .logo-title {
-  padding: 0 10px 16px;
+  padding: 0 10px 12px;
+  position: relative;
 
   @include flex-center;
 
@@ -37,6 +38,16 @@ const collapse = computed(() => appStore.getCollapse)
   .title {
     font-size: 22px;
     margin: 0 12px 0 5px;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--el-border-color), transparent);
   }
 }
 

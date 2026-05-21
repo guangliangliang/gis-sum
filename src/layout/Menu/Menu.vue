@@ -71,27 +71,28 @@ function clearMapContent() {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 12px 8px;
+  padding: 16px 8px 8px;
 }
 
 .menu-options {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .menu-option {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 14px 18px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
   text-decoration: none;
   color: var(--el-text-color-regular);
   position: relative;
   overflow: hidden;
+  border: 1px solid transparent;
 
   &::before {
     content: '';
@@ -99,57 +100,57 @@ function clearMapContent() {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 3px;
+    width: 4px;
     height: 0;
-    background: var(--el-color-primary);
-    border-radius: 0 3px 3px 0;
-    transition: height 0.3s ease;
+    background: linear-gradient(to bottom, var(--el-color-primary), #85ce61);
+    border-radius: 0 4px 4px 0;
+    transition: height 0.25s ease;
   }
 
   &.collapsed {
     justify-content: center;
-    padding: 12px;
+    padding: 14px;
     
     &::before {
       left: 50%;
       top: 0;
       transform: translateX(-50%);
       width: 0;
-      height: 3px;
+      height: 4px;
     }
   }
 
   &:hover {
-    background: linear-gradient(135deg, var(--el-fill-color-light), rgba(144, 147, 153, 0.1));
-    transform: translateX(4px);
+    background: var(--el-fill-color-light);
+    border-color: var(--el-border-color-lighter);
   }
 
   &.active {
-    background: linear-gradient(135deg, var(--el-color-primary-light-9), var(--el-color-primary-light-8));
+    background: linear-gradient(135deg, rgba(64, 158, 255, 0.1), rgba(64, 158, 255, 0.05));
     color: var(--el-color-primary);
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.25);
+    border-color: rgba(64, 158, 255, 0.3);
 
     &::before {
-      height: 60%;
+      height: 65%;
     }
 
     &.collapsed::before {
-      width: 60%;
+      width: 65%;
     }
   }
 }
 
 .menu-icon {
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
 }
 
 .menu-text {
   font-size: 15px;
   white-space: nowrap;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
 }
 
 /* 暗黑模式适配 */
@@ -160,11 +161,11 @@ html.dark {
   
   .menu-option {
     &:hover {
-      background: linear-gradient(135deg, var(--el-fill-color-light), rgba(144, 147, 153, 0.15));
+      background: var(--el-fill-color-light);
     }
     
     &.active {
-      box-shadow: 0 4px 12px rgba(64, 158, 255, 0.35);
+      background: linear-gradient(135deg, rgba(64, 158, 255, 0.15), rgba(64, 158, 255, 0.08));
     }
   }
 }
