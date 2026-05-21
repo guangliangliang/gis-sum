@@ -6,11 +6,11 @@
         v-for="item in menuOptions"
         :key="item.path"
         :to="item.path"
-        :class="['menu-option', { active: $route.path === item.path }]"
+        :class="['menu-option', { active: $route.path === item.path, collapsed: collapse }]"
         @click.native="handleMenuClick(item)"
       >
         <span class="menu-icon">{{ item.icon }}</span>
-        <span class="menu-text">{{ item.name }}</span>
+        <span class="menu-text" v-show="!collapse">{{ item.name }}</span>
       </router-link>
     </div>
   </div>
@@ -34,7 +34,8 @@ const layout = computed(() => appStore.getLayout)
 // 菜单选项
 const menuOptions = [
   { path: '/cluster', name: '点聚合', icon: '🎯' },
-  { path: '/draw', name: '绘制点线面', icon: '✏️' }
+  { path: '/draw', name: '绘制点线面', icon: '✏️' },
+  { path: '/station', name: '站点查询', icon: '📍' }
 ]
 
 // 菜单点击
@@ -90,6 +91,11 @@ function clearMapContent() {
   text-decoration: none;
   color: var(--el-text-color-regular);
 
+  &.collapsed {
+    justify-content: center;
+    padding: 10px;
+  }
+
   &:hover {
     background: var(--el-fill-color-light);
   }
@@ -103,10 +109,12 @@ function clearMapContent() {
 
 .menu-icon {
   font-size: 18px;
+  flex-shrink: 0;
 }
 
 .menu-text {
   font-size: 14px;
+  white-space: nowrap;
 }
 
 /* 暗黑模式适配 */

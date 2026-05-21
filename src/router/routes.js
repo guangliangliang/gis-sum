@@ -34,6 +34,14 @@ const routes = [
         meta: {
           title: '绘制点线面'
         }
+      },
+      {
+        path: 'station',
+        name: 'Station',
+        component: () => import('@/views/tools/StationTool.vue'),
+        meta: {
+          title: '站点查询'
+        }
       }
     ]
   },

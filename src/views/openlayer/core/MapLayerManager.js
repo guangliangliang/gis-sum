@@ -15,7 +15,7 @@ class MapLayerManager {
   /**
    * 添加点图层
    * @param {string} id 图层ID
-   * @param {Array<Array<number>>} coordinates 点坐标数组 [[lng, lat], ...]
+   * @param {Array<Array<number>>|Array<Object>} coordinates 点坐标数组 [[lng, lat], ...] 或 [{lng, lat}, ...]
    * @param {Object} options 图层选项
    * @returns {MapLayerManager} 当前实例
    */
@@ -26,8 +26,15 @@ class MapLayerManager {
 
     // 添加点要素
     coordinates.forEach((coord, index) => {
+      let lng, lat
+      if (Array.isArray(coord)) {
+        [lng, lat] = coord
+      } else {
+        lng = coord.lng
+        lat = coord.lat
+      }
       // 将经纬度坐标转换为地图坐标
-      const mapCoord = fromLonLat(coord)
+      const mapCoord = fromLonLat([lng, lat])
       const feature = new Feature({
         geometry: new Point(mapCoord),
         id: index,
