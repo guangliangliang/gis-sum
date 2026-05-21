@@ -39,9 +39,31 @@ onMounted(async () => {
 })
 
 onActivated(() => {
-  // 组件被激活时，更新地图尺寸
-  if (mapInstance && mapInstance.getMap) {
+  // 组件被激活时，清理所有非底图内容，更新地图尺寸
+  if (mapInstance) {
+    // 清理聚合
+    const clusterManager = mapInstance.getClusterManager && mapInstance.getClusterManager()
+    if (clusterManager && clusterManager.clearCluster) {
+      clusterManager.clearCluster()
+    }
+    // 清理绘制
+    const drawManager = mapInstance.getDrawManager && mapInstance.getDrawManager()
+    if (drawManager && drawManager.removeDrawLayer) {
+      drawManager.removeDrawLayer()
+    }
+    // 清理其他图层
+    const layerManager = mapInstance.getLayerManager && mapInstance.getLayerManager()
+    if (layerManager && layerManager.removeAllLayers) {
+      layerManager.removeAllLayers()
+    }
+    // 清理所有 overlay
     const map = mapInstance.getMap()
+    if (map) {
+      const overlays = map.getOverlays()
+      overlays.forEach(overlay => map.removeOverlay(overlay))
+    }
+    
+    // 更新地图尺寸
     if (map && typeof map.updateSize === 'function') {
       map.updateSize()
     }

@@ -5,6 +5,8 @@ export const useMapStore = defineStore('map', {
   state: () => ({
     // 当前地图类型: 'openlayer' | 'mapbox' | 'gaode' | 'cesium'
     currentMapType: 'openlayer',
+    // 地图切换 key，用于强制刷新 router-view
+    mapKey: 0,
     // 各地图实例缓存 (用 markRaw 避免响应式代理)
     mapInstances: {},
     // 各地图是否就绪
@@ -18,10 +20,14 @@ export const useMapStore = defineStore('map', {
     getCurrentMapType: (state) => state.currentMapType,
     // 获取当前地图实例
     getMapInstance: (state) => state.mapInstances[state.currentMapType] || null,
+    // 获取所有地图实例
+    getMapInstances: (state) => state.mapInstances,
     // 获取地图容器
     getMapContainer: (state) => state.mapContainer,
     // 判断当前地图是否就绪
-    isMapReady: (state) => state.mapReadyStatus[state.currentMapType] && state.mapInstances[state.currentMapType] !== null
+    isMapReady: (state) => state.mapReadyStatus[state.currentMapType] && state.mapInstances[state.currentMapType] !== null,
+    // 获取地图 key，用于 router-view 强制刷新
+    getMapKey: (state) => state.mapKey
   },
 
   actions: {
@@ -34,7 +40,8 @@ export const useMapStore = defineStore('map', {
         return
       }
       this.currentMapType = type
-      console.log(`[MapStore] 切换地图类型为: ${type}`)
+      this.mapKey++
+      console.log(`[MapStore] 切换地图类型为: ${type}, mapKey: ${this.mapKey}`)
     },
 
     /**

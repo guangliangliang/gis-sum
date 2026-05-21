@@ -24,7 +24,7 @@
           <MapContainer @map-ready="handleMapReady" />
           <!-- 悬浮工具栏 -->
           <div class="floating-toolbar">
-            <router-view />
+            <router-view :key="mapKey" />
           </div>
         </main>
 
@@ -62,7 +62,7 @@
           <MapContainer @map-ready="handleMapReady" />
           <!-- 悬浮工具栏 -->
           <div class="floating-toolbar">
-            <router-view />
+            <router-view :key="mapKey" />
           </div>
         </main>
 
@@ -87,7 +87,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useAppStore } from '@/stores'
+import { useAppStore, useMapStore } from '@/stores'
 import OHeader from './Header.vue'
 import Menu from './Menu/Menu.vue'
 import TitleLogo from './TitleLogo.vue'
@@ -95,7 +95,9 @@ import BaseAQ from './BaseAQ.vue'
 import MapContainer from '@/components/MapContainer/index.vue'
 
 const appStore = useAppStore()
+const mapStore = useMapStore()
 const layout = computed(() => appStore.getLayout)
+const mapKey = computed(() => mapStore.getMapKey)
 const menuRef = ref(null)
 
 const handleClickOutside = () => {

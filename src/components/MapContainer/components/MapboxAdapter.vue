@@ -33,11 +33,57 @@ onMounted(async () => {
 })
 
 onActivated(() => {
-  // 组件被激活时，更新地图尺寸
-  if (mapInstance && mapInstance.getMap) {
+  // 组件被激活时，清理所有非底图内容，更新地图尺寸
+  if (mapInstance) {
     const map = mapInstance.getMap()
-    if (map && typeof map.resize === 'function') {
-      map.resize()
+    if (map) {
+      // 等待样式加载完成
+      const cleanUpMap = () => {
+        try {
+          // 清理聚合
+          const clusterManager = mapInstance.getClusterManager && mapInstance.getClusterManager()
+          if (clusterManager && clusterManager.clearCluster) {
+            clusterManager.clearCluster()
+          }
+          // 清理绘制
+          const drawManager = mapInstance.getDrawManager && mapInstance.getDrawManager()
+          if (drawManager && drawManager.removeDrawLayer) {
+            drawManager.removeDrawLayer()
+          }
+          // 只清理我们知道是自己添加的特定图层和源
+          try {
+            // 清理站点查询相关的
+            if (map.getLayer('station-layer')) {
+              try { map.removeLayer('station-layer') } catch (e) {}
+            }
+            if (map.getSource('station-source')) {
+              try { map.removeSource('station-source') } catch (e) {}
+            }
+          } catch (e) {
+            console.warn('[MapboxAdapter] 清理图层时出错:', e)
+          }
+          // 清理 popup
+          try {
+            if (map._popups && map._popups.length > 0) {
+              map._popups.forEach(popup => popup.remove())
+            }
+          } catch (e) {}
+        } catch (e) {
+          console.warn('[MapboxAdapter] 清理地图时出错:', e)
+        }
+        
+        // 更新地图尺寸
+        if (typeof map.resize === 'function') {
+          map.resize()
+        }
+      }
+      
+      // 检查样式是否已加载
+      if (map.isStyleLoaded()) {
+        cleanUpMap()
+      } else {
+        map.once('styledata', cleanUpMap)
+      }
     }
   }
 })

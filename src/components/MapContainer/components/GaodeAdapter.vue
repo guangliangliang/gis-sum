@@ -55,12 +55,34 @@ onMounted(async () => {
 })
 
 onActivated(() => {
-  // 组件被激活时，更新地图尺寸
-  if (mapInstance && mapInstance.getMap) {
+  // 组件被激活时，清理所有非底图内容
+  if (mapInstance) {
     const map = mapInstance.getMap()
-    if (map && typeof map.setFitView === 'function') {
-      // 高德地图使用 setFitView 刷新视图
-      map.setFitView()
+    if (map) {
+      // 清理聚合
+      const clusterManager = mapInstance.getClusterManager && mapInstance.getClusterManager()
+      if (clusterManager && clusterManager.clearCluster) {
+        clusterManager.clearCluster()
+      }
+      // 清理绘制
+      const drawManager = mapInstance.getDrawManager && mapInstance.getDrawManager()
+      if (drawManager && drawManager.removeDrawLayer) {
+        drawManager.removeDrawLayer()
+      }
+      // 清理其他图层
+      const layerManager = mapInstance.getLayerManager && mapInstance.getLayerManager()
+      if (layerManager && layerManager.removeAllLayers) {
+        layerManager.removeAllLayers()
+      }
+      // 清理所有 markers
+      if (map.getAllOverlays) {
+        const overlays = map.getAllOverlays()
+        overlays.forEach(overlay => map.remove(overlay))
+      }
+      // 清理 infoWindow
+      if (map.clearInfoWindow) {
+        map.clearInfoWindow()
+      }
     }
   }
 })

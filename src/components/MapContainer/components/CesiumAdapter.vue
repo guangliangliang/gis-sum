@@ -32,11 +32,33 @@ onMounted(async () => {
 })
 
 onActivated(() => {
-  // 组件被激活时，Cesium通常会自动处理，但可以尝试强制重排
-  if (mapInstance && mapInstance.getViewer) {
+  // 组件被激活时，清理所有非底图内容
+  if (mapInstance) {
     const viewer = mapInstance.getViewer()
-    if (viewer && viewer.scene && typeof viewer.scene.requestRender === 'function') {
-      viewer.scene.requestRender()
+    if (viewer) {
+      // 清理聚合
+      const clusterManager = mapInstance.getClusterManager && mapInstance.getClusterManager()
+      if (clusterManager && clusterManager.clearCluster) {
+        clusterManager.clearCluster()
+      }
+      // 清理绘制
+      const drawManager = mapInstance.getDrawManager && mapInstance.getDrawManager()
+      if (drawManager && drawManager.removeDrawLayer) {
+        drawManager.removeDrawLayer()
+      }
+      // 清理其他图层
+      const layerManager = mapInstance.getLayerManager && mapInstance.getLayerManager()
+      if (layerManager && layerManager.removeAllLayers) {
+        layerManager.removeAllLayers()
+      }
+      // 清理所有 entities
+      if (viewer.entities && viewer.entities.values) {
+        viewer.entities.removeAll()
+      }
+      // 强制重排
+      if (viewer.scene && typeof viewer.scene.requestRender === 'function') {
+        viewer.scene.requestRender()
+      }
     }
   }
 })

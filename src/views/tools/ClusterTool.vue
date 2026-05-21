@@ -15,12 +15,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch, onUnmounted } from 'vue'
 import { useMapStore } from '@/stores'
 import { Plus, Delete } from '@element-plus/icons-vue'
 
 const mapStore = useMapStore()
 const mapInstance = computed(() => mapStore.getMapInstance)
+const currentMapType = computed(() => mapStore.getCurrentMapType)
 
 function handleAddCluster() {
   if (!mapInstance.value) {
@@ -43,6 +44,20 @@ function handleClearCluster() {
     clusterManager.clearCluster()
   }
 }
+
+watch(currentMapType, () => {
+  console.log('[ClusterTool] 地图已切换')
+})
+
+onUnmounted(() => {
+  console.log('[ClusterTool] 组件卸载，清理聚合点')
+  if (mapInstance.value) {
+    const clusterManager = mapInstance.value.getClusterManager()
+    if (clusterManager) {
+      clusterManager.clearCluster()
+    }
+  }
+})
 </script>
 
 <style scoped lang="scss">

@@ -7,7 +7,7 @@ class ClusterManager {
     this.clusterLayerId = 'station-clusters'
     this.clusterCountLayerId = 'station-cluster-count'
     this.clusterPointLayerId = 'station-points'
-    this.sourceId = 'station-source'
+    this.sourceId = 'cluster-source'
   }
 
   addClusterPoints(count = 100) {

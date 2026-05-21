@@ -36,6 +36,13 @@ import { stationData } from './stationData'
 import { useRoute } from 'vue-router'
 import { Plus, Delete } from '@element-plus/icons-vue'
 import mapboxgl from 'mapbox-gl'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import { Feature } from 'ol'
+import { Point } from 'ol/geom'
+import { fromLonLat } from 'ol/proj'
+import { Style, Icon } from 'ol/style'
+import { Overlay } from 'ol'
 
 const mapStore = useMapStore()
 const route = useRoute()
@@ -44,9 +51,11 @@ const currentMapType = computed(() => mapStore.getCurrentMapType)
 
 const activeStation = ref(null)
 const markersAdded = ref(false)
+let lastMapType = null // 最后添加标记时的地图类型
 let stationLayer = null
 let popupOverlay = null
 let clickHandler = null
+let clickHandlerKey = null // OpenLayers 事件键
 let iconLoaded = false
 
 function addStationMarkers() {
@@ -57,9 +66,10 @@ function addStationMarkers() {
 
   removeStationMarkers()
 
-  if (currentMapType.value === 'openlayer') {
+  lastMapType = currentMapType.value
+  if (lastMapType === 'openlayer') {
     addStationMarkersOpenlayer()
-  } else if (currentMapType.value === 'mapbox') {
+  } else if (lastMapType === 'mapbox') {
     addStationMarkersMapbox()
   }
 
@@ -68,14 +78,6 @@ function addStationMarkers() {
 
 function addStationMarkersOpenlayer() {
   const map = mapInstance.value.getMap()
-  const VectorSource = window.ol.source.Vector
-  const VectorLayer = window.ol.layer.Vector
-  const Feature = window.ol.Feature
-  const Point = window.ol.geom.Point
-  const fromLonLat = window.ol.proj.fromLonLat
-  const Style = window.ol.style.Style
-  const Icon = window.ol.style.Icon
-  const Overlay = window.ol.Overlay
 
   const source = new VectorSource()
 
@@ -118,7 +120,7 @@ function addStationMarkersOpenlayer() {
       activeStation.value = null
     }
   }
-  map.on('click', clickHandler)
+  clickHandlerKey = map.on('click', clickHandler)
 }
 
 function addStationMarkersMapbox() {
@@ -126,7 +128,15 @@ function addStationMarkersMapbox() {
 
   const features = stationData.map(station => ({
     type: 'Feature',
-    properties: { id: station.id, station: station },
+    properties: { 
+      id: station.id, 
+      lng: station.lng,
+      lat: station.lat,
+      name: station.name,
+      address: station.address,
+      phone: station.phone,
+      description: station.description
+    },
     geometry: { type: 'Point', coordinates: [station.lng, station.lat] }
   }))
 
@@ -135,81 +145,143 @@ function addStationMarkersMapbox() {
     data: { type: 'FeatureCollection', features }
   })
 
-  map.addLayer({
-    id: 'station-layer',
-    type: 'circle',
-    source: 'station-source',
-    paint: {
-      'circle-radius': 12,
-      'circle-color': '#00D500',
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': 3
-    }
-  })
-
-  stationLayer = true
-
-  clickHandler = function(e) {
-    const features = map.queryRenderedFeatures(e.point, { layers: ['station-layer'] })
-    if (features.length > 0) {
-      const station = features[0].properties.station
-      showPopup(station)
-    } else {
-      if (popupOverlay) {
-        popupOverlay.remove()
-        popupOverlay = null
+  const tryLoadIcon = () => {
+    map.loadImage('/marker.png', (error, image) => {
+      if (!error) {
+        if (!map.hasImage('custom-marker')) {
+          map.addImage('custom-marker', image)
+        }
+        addSymbolLayer()
+      } else {
+        map.loadImage('/marker.svg', (svgError, svgImage) => {
+          if (!svgError) {
+            if (!map.hasImage('custom-marker')) {
+              map.addImage('custom-marker', svgImage)
+            }
+            addSymbolLayer()
+          } else {
+            addCircleLayer()
+          }
+        })
       }
-      activeStation.value = null
-    }
+    })
   }
-  map.on('click', clickHandler)
+
+  const addSymbolLayer = () => {
+    const layers = map.getStyle().layers
+    const lastSymbolLayer = layers.filter(l => l.type === 'symbol').pop()
+
+    map.addLayer({
+      id: 'station-layer',
+      type: 'symbol',
+      source: 'station-source',
+      layout: {
+        'icon-image': 'custom-marker',
+        'icon-size': 1,
+        'icon-anchor': 'bottom',
+        'icon-allow-overlap': true
+      }
+    }, lastSymbolLayer ? lastSymbolLayer.id : undefined)
+    stationLayer = true
+    setupClickHandler()
+  }
+
+  const addCircleLayer = () => {
+    map.addLayer({
+      id: 'station-layer',
+      type: 'circle',
+      source: 'station-source',
+      paint: {
+        'circle-radius': 12,
+        'circle-color': '#00D500',
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 3
+      }
+    })
+    stationLayer = true
+    setupClickHandler()
+  }
+
+  const setupClickHandler = () => {
+    clickHandler = function(e) {
+      const features = map.queryRenderedFeatures(e.point, { layers: ['station-layer'] })
+      if (features.length > 0) {
+        const props = features[0].properties
+        showPopup(props)
+      } else {
+        if (popupOverlay) {
+          popupOverlay.remove()
+          popupOverlay = null
+        }
+        activeStation.value = null
+      }
+    }
+    map.on('click', clickHandler)
+  }
+
+  if (map.hasImage('custom-marker')) {
+    addSymbolLayer()
+  } else {
+    tryLoadIcon()
+  }
 }
 
 function removeStationMarkers() {
-  if (!mapInstance.value) return
+  if (!lastMapType) {
+    markersAdded.value = false
+    activeStation.value = null
+    return
+  }
 
-  if (currentMapType.value === 'openlayer') {
-    removeStationMarkersOpenlayer()
-  } else if (currentMapType.value === 'mapbox') {
-    removeStationMarkersMapbox()
+  try {
+    const map = mapInstance.value.getMap()
+    
+    if (lastMapType === 'openlayer') {
+      // 清理 OpenLayers 的资源
+      if (stationLayer && typeof map.removeLayer === 'function') {
+        try { map.removeLayer(stationLayer) } catch (e) {}
+        stationLayer = null
+      }
+      if (popupOverlay && typeof map.removeOverlay === 'function') {
+        try { map.removeOverlay(popupOverlay) } catch (e) {}
+        popupOverlay = null
+      }
+      if (clickHandlerKey && typeof map.unByKey === 'function') {
+        try { map.unByKey(clickHandlerKey) } catch (e) {}
+        clickHandlerKey = null
+      }
+    } else if (lastMapType === 'mapbox') {
+      // 清理 Mapbox 的资源
+      if (typeof map.getLayer === 'function' && map.getLayer('station-layer')) {
+        try { map.removeLayer('station-layer') } catch (e) {}
+      }
+      if (typeof map.getSource === 'function' && map.getSource('station-source')) {
+        try { map.removeSource('station-source') } catch (e) {}
+      }
+      if (popupOverlay && typeof popupOverlay.remove === 'function') {
+        try { popupOverlay.remove() } catch (e) {}
+        popupOverlay = null
+      }
+      if (clickHandler && typeof map.off === 'function') {
+        try { map.off('click', clickHandler) } catch (e) {}
+        clickHandler = null
+      }
+    }
+    
+    // 清理 popup DOM 元素
+    const el = document.getElementById('popup')
+    if (el && el.parentNode) el.parentNode.removeChild(el)
+    
+    // 重置所有状态
+    clickHandler = null
+    clickHandlerKey = null
+  } catch (e) {
+    console.warn('[StationTool] 清理资源时出错:', e)
   }
 
   markersAdded.value = false
   activeStation.value = null
-}
-
-function removeStationMarkersOpenlayer() {
-  const map = mapInstance.value.getMap()
-  if (stationLayer) {
-    map.removeLayer(stationLayer)
-    stationLayer = null
-  }
-  if (popupOverlay) {
-    map.removeOverlay(popupOverlay)
-    popupOverlay = null
-    const el = document.getElementById('popup')
-    if (el && el.parentNode) el.parentNode.removeChild(el)
-  }
-  if (clickHandler) {
-    map.off('click', clickHandler)
-    clickHandler = null
-  }
-}
-
-function removeStationMarkersMapbox() {
-  const map = mapInstance.value.getMap()
-  if (map.getLayer('station-layer')) map.removeLayer('station-layer')
-  if (map.getSource('station-source')) map.removeSource('station-source')
-  if (popupOverlay) {
-    popupOverlay.remove()
-    popupOverlay = null
-    const el = document.getElementById('popup')
-    if (el && el.parentNode) el.parentNode.removeChild(el)
-  }
-  if (clickHandler) {
-    map.off('click', clickHandler)
-    clickHandler = null
-  }
+  lastMapType = null
 }
 
 function handleStationClick(station) {
@@ -223,7 +295,6 @@ function flyToStation(station) {
   if (!mapInstance.value) return
   if (currentMapType.value === 'openlayer') {
     const map = mapInstance.value.getMap()
-    const fromLonLat = window.ol.proj.fromLonLat
     map.getView().animate({
       center: fromLonLat([station.lng, station.lat]),
       zoom: 15,
@@ -290,7 +361,6 @@ function initPopupOpenlayer(map, Overlay) {
 }
 
 function showPopupOpenlayer(station) {
-  const fromLonLat = window.ol.proj.fromLonLat
   const popupContent = document.getElementById('popup-content')
   if (popupContent) {
     popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
@@ -310,7 +380,11 @@ function showPopupMapbox(station) {
   
   const popupHtml = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
 
-  popupOverlay = new mapboxgl.Popup({ closeOnClick: false, closeButton: true })
+  popupOverlay = new mapboxgl.Popup({ 
+    closeOnClick: false, 
+    closeButton: true,
+    offset: [0, -50]
+  })
     .setLngLat([station.lng, station.lat])
     .setHTML(popupHtml)
     .addTo(map)
@@ -319,6 +393,60 @@ function showPopupMapbox(station) {
 watch(() => route.path, newPath => {
   if (newPath !== '/station') removeStationMarkers()
 }, { immediate: true })
+
+watch(currentMapType, (newType, oldType) => {
+  console.log(`[StationTool] 地图从 ${oldType} 切换到 ${newType}，清理站点标记`)
+  const mapInstances = mapStore.getMapInstances
+  // 如果有旧地图类型，并且标记是在旧地图上添加的，使用旧地图实例清理
+  if (oldType && oldType === lastMapType && mapInstances && mapInstances[oldType]) {
+    const oldMapInstance = mapInstances[oldType]
+    const oldMap = oldMapInstance.getMap()
+    
+    if (oldMap) {
+      try {
+        if (oldType === 'openlayer') {
+          if (stationLayer && typeof oldMap.removeLayer === 'function') {
+            oldMap.removeLayer(stationLayer)
+          }
+          if (popupOverlay && typeof oldMap.removeOverlay === 'function') {
+            oldMap.removeOverlay(popupOverlay)
+          }
+          if (clickHandlerKey && typeof oldMap.unByKey === 'function') {
+            oldMap.unByKey(clickHandlerKey)
+          }
+        } else if (oldType === 'mapbox') {
+          if (typeof oldMap.getLayer === 'function' && oldMap.getLayer('station-layer')) {
+            oldMap.removeLayer('station-layer')
+          }
+          if (typeof oldMap.getSource === 'function' && oldMap.getSource('station-source')) {
+            oldMap.removeSource('station-source')
+          }
+          if (popupOverlay && typeof popupOverlay.remove === 'function') {
+            popupOverlay.remove()
+          }
+          if (clickHandler && typeof oldMap.off === 'function') {
+            oldMap.off('click', clickHandler)
+          }
+        }
+      } catch (e) {
+        console.warn('[StationTool] 清理旧地图资源时出错:', e)
+      }
+    }
+    
+    // 清理 DOM 元素
+    const el = document.getElementById('popup')
+    if (el && el.parentNode) el.parentNode.removeChild(el)
+    
+    // 重置所有状态
+    stationLayer = null
+    popupOverlay = null
+    clickHandler = null
+    clickHandlerKey = null
+    markersAdded.value = false
+    activeStation.value = null
+    lastMapType = null
+  }
+})
 
 onUnmounted(() => removeStationMarkers())
 </script>

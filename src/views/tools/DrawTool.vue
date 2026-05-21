@@ -35,12 +35,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, watch } from 'vue'
 import { useMapStore } from '@/stores'
 import { Location, Minus, Select, Delete } from '@element-plus/icons-vue'
 
 const mapStore = useMapStore()
 const mapInstance = computed(() => mapStore.getMapInstance)
+const currentMapType = computed(() => mapStore.getCurrentMapType)
 const drawType = ref(null)
 
 function handleDraw(type) {
@@ -73,13 +74,25 @@ function handleClearDraw() {
   }
 }
 
+function resetDrawState() {
+  drawType.value = null
+}
+
+watch(currentMapType, (newType, oldType) => {
+  console.log(`[DrawTool] 地图从 ${oldType} 切换到 ${newType}，重置绘制状态`)
+  resetDrawState()
+})
+
 onUnmounted(() => {
+  console.log('[DrawTool] 组件卸载，停止绘制并清除绘制内容')
   if (mapInstance.value) {
     const drawManager = mapInstance.value.getDrawManager()
     if (drawManager) {
       drawManager.stopDraw()
+      drawManager.clearDrawings()
     }
   }
+  resetDrawState()
 })
 </script>
 
