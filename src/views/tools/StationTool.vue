@@ -305,41 +305,13 @@ function showPopupMapbox(station) {
     popupOverlay.remove()
   }
 
-  const el = document.createElement('div')
-  el.id = 'popup'
-  el.innerHTML = '<div id="popup-content"></div><div id="popup-closer" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:20px;line-height:1;color:#666;">×</div>'
-  document.body.appendChild(el)
-
-  Object.assign(el.style, {
-    position: 'absolute',
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 2px 16px rgba(0,0,0,0.25)',
-    transform: 'translate(-50%, -100%)',
-    marginTop: '-15px',
-    minWidth: '240px',
-    maxWidth: '320px',
-    zIndex: '1000'
-  })
-
-  const closer = el.querySelector('#popup-closer')
-  if (closer) {
-    closer.onclick = function() {
-      if (popupOverlay) popupOverlay.remove()
-      activeStation.value = null
-      return false
-    }
-  }
-
-  const popupContent = el.querySelector('#popup-content')
-  if (popupContent) {
-    popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
-  }
-
   const map = mapInstance.value.getMap()
-  popupOverlay = new mapboxgl.Popup({ closeOnClick: false })
+  
+  const popupHtml = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
+
+  popupOverlay = new mapboxgl.Popup({ closeOnClick: false, closeButton: true })
     .setLngLat([station.lng, station.lat])
-    .setDOMContent(el)
+    .setHTML(popupHtml)
     .addTo(map)
 }
 
