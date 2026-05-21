@@ -4,6 +4,8 @@ import ControlManager from './ControlManager'
 import CoordinateHelper from './CoordinateHelper'
 import MapLayerManager from './MapLayerManager'
 import ProjectionManager from './ProjectionManager'
+import ClusterManager from './ClusterManager'
+import DrawManager from './DrawManager'
 import { MAPBOX_TOKEN } from '@/config/token'
 class MapboxMap {
   constructor(container, options = {}) {
@@ -20,6 +22,8 @@ class MapboxMap {
     this.coordinateHelper = null
     this.layerManager = null
     this.projectionManager = null
+    this.clusterManager = null
+    this.drawManager = null
   }
 
   /**
@@ -64,6 +68,8 @@ class MapboxMap {
     this.coordinateHelper = new CoordinateHelper(this.map)
     this.layerManager = new MapLayerManager(this.map)
     this.projectionManager = new ProjectionManager(this.map)
+    this.clusterManager = new ClusterManager(this.map)
+    this.drawManager = new DrawManager(this.map)
   }
 
   /**
@@ -104,6 +110,22 @@ class MapboxMap {
    */
   getProjectionManager() {
     return this.projectionManager
+  }
+
+  /**
+   * 获取点聚合管理器
+   * @returns {ClusterManager} 点聚合管理器实例
+   */
+  getClusterManager() {
+    return this.clusterManager
+  }
+
+  /**
+   * 获取绘制管理器
+   * @returns {DrawManager} 绘制管理器实例
+   */
+  getDrawManager() {
+    return this.drawManager
   }
 
   /**
@@ -155,6 +177,14 @@ class MapboxMap {
     if (this.projectionManager) {
       this.projectionManager.destroy()
       this.projectionManager = null
+    }
+    if (this.clusterManager) {
+      this.clusterManager.destroy()
+      this.clusterManager = null
+    }
+    if (this.drawManager) {
+      this.drawManager.destroy()
+      this.drawManager = null
     }
 
     // 销毁地图实例

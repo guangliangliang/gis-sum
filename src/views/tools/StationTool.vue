@@ -35,18 +35,11 @@ import { useMapStore } from '@/stores'
 import { stationData } from './stationData'
 import { useRoute } from 'vue-router'
 import { Plus, Delete } from '@element-plus/icons-vue'
-import VectorSource from 'ol/source/Vector'
-import VectorLayer from 'ol/layer/Vector'
-import Feature from 'ol/Feature'
-import Point from 'ol/geom/Point'
-import Style from 'ol/style/Style'
-import Icon from 'ol/style/Icon'
-import Overlay from 'ol/Overlay'
-import { fromLonLat } from 'ol/proj'
 
 const mapStore = useMapStore()
 const route = useRoute()
 const mapInstance = computed(() => mapStore.getMapInstance)
+const currentMapType = computed(() => mapStore.getCurrentMapType)
 
 const activeStation = ref(null)
 const markersAdded = ref(false)
@@ -59,11 +52,28 @@ function addStationMarkers() {
     console.warn('地图实例未就绪')
     return
   }
-  const map = mapInstance.value.getMap()
-  if (!map) {
-    console.warn('地图对象未就绪')
-    return
+
+  removeStationMarkers()
+
+  if (currentMapType.value === 'openlayer') {
+    addStationMarkersOpenlayer()
+  } else if (currentMapType.value === 'mapbox') {
+    addStationMarkersMapbox()
   }
+
+  markersAdded.value = true
+}
+
+function addStationMarkersOpenlayer() {
+  const map = mapInstance.value.getMap()
+  const VectorSource = window.ol.source.Vector
+  const VectorLayer = window.ol.layer.Vector
+  const Feature = window.ol.Feature
+  const Point = window.ol.geom.Point
+  const fromLonLat = window.ol.proj.fromLonLat
+  const Style = window.ol.style.Style
+  const Icon = window.ol.style.Icon
+  const Overlay = window.ol.Overlay
 
   const source = new VectorSource()
 
@@ -77,7 +87,7 @@ function addStationMarkers() {
 
   const style = new Style({
     image: new Icon({
-      src: "/marker.svg",
+      src: '/marker.svg',
       scale: 1,
       anchor: [0.5, 1],
       anchorOrigin: 'bottom-left'
@@ -91,7 +101,7 @@ function addStationMarkers() {
   })
 
   map.addLayer(stationLayer)
-  initPopup(map)
+  initPopupOpenlayer(map, Overlay)
 
   clickHandler = function(event) {
     const features = map.getFeaturesAtPixel(event.pixel)
@@ -107,34 +117,96 @@ function addStationMarkers() {
     }
   }
   map.on('click', clickHandler)
+}
 
-  markersAdded.value = true
+function addStationMarkersMapbox() {
+  const map = mapInstance.value.getMap()
+
+  const features = stationData.map(station => ({
+    type: 'Feature',
+    properties: { id: station.id, station: station },
+    geometry: { type: 'Point', coordinates: [station.lng, station.lat] }
+  }))
+
+  map.addSource('station-source', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features }
+  })
+
+  map.addLayer({
+    id: 'station-layer',
+    type: 'symbol',
+    source: 'station-source',
+    layout: {
+      'icon-image': 'marker-15',
+      'icon-size': 1.5,
+      'icon-anchor': 'bottom'
+    }
+  })
+
+  stationLayer = true
+
+  clickHandler = function(e) {
+    const features = map.queryRenderedFeatures(e.point, { layers: ['station-layer'] })
+    if (features.length > 0) {
+      const station = features[0].properties.station
+      showPopup(station)
+    } else {
+      if (popupOverlay) {
+        popupOverlay.remove()
+        popupOverlay = null
+      }
+      activeStation.value = null
+    }
+  }
+  map.on('click', clickHandler)
 }
 
 function removeStationMarkers() {
   if (!mapInstance.value) return
-  const map = mapInstance.value.getMap()
-  if (!map) return
 
+  if (currentMapType.value === 'openlayer') {
+    removeStationMarkersOpenlayer()
+  } else if (currentMapType.value === 'mapbox') {
+    removeStationMarkersMapbox()
+  }
+
+  markersAdded.value = false
+  activeStation.value = null
+}
+
+function removeStationMarkersOpenlayer() {
+  const map = mapInstance.value.getMap()
   if (stationLayer) {
     map.removeLayer(stationLayer)
     stationLayer = null
   }
-
   if (popupOverlay) {
     map.removeOverlay(popupOverlay)
     popupOverlay = null
     const el = document.getElementById('popup')
     if (el && el.parentNode) el.parentNode.removeChild(el)
   }
-
   if (clickHandler) {
-    map.un('click', clickHandler)
+    map.off('click', clickHandler)
     clickHandler = null
   }
+}
 
-  markersAdded.value = false
-  activeStation.value = null
+function removeStationMarkersMapbox() {
+  const map = mapInstance.value.getMap()
+  if (map.getLayer('station-layer')) map.removeLayer('station-layer')
+  if (map.getSource('station-source')) map.removeSource('station-source')
+  if (popupOverlay) {
+    popupOverlay.remove()
+    popupOverlay = null
+    const el = document.getElementById('popup')
+    if (el && el.parentNode) el.parentNode.removeChild(el)
+  }
+  if (clickHandler) {
+    map.off('click', clickHandler)
+    clickHandler = null
+  }
 }
 
 function handleStationClick(station) {
@@ -146,40 +218,44 @@ function handleStationClick(station) {
 
 function flyToStation(station) {
   if (!mapInstance.value) return
-  const map = mapInstance.value.getMap()
-  if (!map) return
-  map.getView().animate({
-    center: fromLonLat([station.lng, station.lat]),
-    zoom: 15,
-    duration: 1000
-  })
+  if (currentMapType.value === 'openlayer') {
+    const map = mapInstance.value.getMap()
+    const fromLonLat = window.ol.proj.fromLonLat
+    map.getView().animate({
+      center: fromLonLat([station.lng, station.lat]),
+      zoom: 15,
+      duration: 1000
+    })
+  } else if (currentMapType.value === 'mapbox') {
+    const map = mapInstance.value.getMap()
+    map.flyTo({
+      center: [station.lng, station.lat],
+      zoom: 15,
+      speed: 0.8
+    })
+  }
 }
 
 function showPopup(station) {
   if (!mapInstance.value) return
-  const map = mapInstance.value.getMap()
-  if (!map) return
   activeStation.value = station
 
-  const popupContent = document.getElementById('popup-content')
-  if (popupContent) {
-    popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
-  }
-
-  if (popupOverlay) {
-    popupOverlay.setPosition(fromLonLat([station.lng, station.lat]))
+  if (currentMapType.value === 'openlayer') {
+    showPopupOpenlayer(station)
+  } else if (currentMapType.value === 'mapbox') {
+    showPopupMapbox(station)
   }
 }
 
-function initPopup(map) {
-  let popupElement = document.getElementById('popup')
-  if (!popupElement) {
-    popupElement = document.createElement('div')
-    popupElement.id = 'popup'
-    popupElement.innerHTML = '<div id="popup-content"></div><div id="popup-closer" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:20px;line-height:1;color:#666;">×</div>'
-    document.body.appendChild(popupElement)
+function initPopupOpenlayer(map, Overlay) {
+  let el = document.getElementById('popup')
+  if (!el) {
+    el = document.createElement('div')
+    el.id = 'popup'
+    el.innerHTML = '<div id="popup-content"></div><div id="popup-closer" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:20px;line-height:1;color:#666;">×</div>'
+    document.body.appendChild(el)
 
-    Object.assign(popupElement.style, {
+    Object.assign(el.style, {
       position: 'absolute',
       backgroundColor: 'white',
       borderRadius: '8px',
@@ -200,13 +276,70 @@ function initPopup(map) {
     }
   }
 
-  if (popupOverlay) return
-  popupOverlay = new Overlay({
-    element: popupElement,
-    autoPan: { animation: { duration: 250 } },
-    autoPanMargin: 20
+  if (!popupOverlay) {
+    popupOverlay = new Overlay({
+      element: el,
+      autoPan: { animation: { duration: 250 } },
+      autoPanMargin: 20
+    })
+    map.addOverlay(popupOverlay)
+  }
+}
+
+function showPopupOpenlayer(station) {
+  const fromLonLat = window.ol.proj.fromLonLat
+  const popupContent = document.getElementById('popup-content')
+  if (popupContent) {
+    popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
+  }
+
+  if (popupOverlay) {
+    popupOverlay.setPosition(fromLonLat([station.lng, station.lat]))
+  }
+}
+
+function showPopupMapbox(station) {
+  if (popupOverlay) {
+    popupOverlay.remove()
+  }
+
+  const el = document.createElement('div')
+  el.id = 'popup'
+  el.innerHTML = '<div id="popup-content"></div><div id="popup-closer" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:20px;line-height:1;color:#666;">×</div>'
+  document.body.appendChild(el)
+
+  Object.assign(el.style, {
+    position: 'absolute',
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    boxShadow: '0 2px 16px rgba(0,0,0,0.25)',
+    transform: 'translate(-50%, -100%)',
+    marginTop: '-15px',
+    minWidth: '240px',
+    maxWidth: '320px',
+    zIndex: '1000'
   })
-  map.addOverlay(popupOverlay)
+
+  const closer = el.querySelector('#popup-closer')
+  if (closer) {
+    closer.onclick = function() {
+      if (popupOverlay) popupOverlay.remove()
+      activeStation.value = null
+      return false
+    }
+  }
+
+  const popupContent = el.querySelector('#popup-content')
+  if (popupContent) {
+    popupContent.innerHTML = '<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">' + station.name + '</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>' + station.address + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>' + station.phone + '</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>' + station.description + '</p></div>'
+  }
+
+  const map = mapInstance.value.getMap()
+  const mapboxgl = window.mapboxgl
+  popupOverlay = new mapboxgl.Popup({ closeOnClick: false })
+    .setLngLat([station.lng, station.lat])
+    .setDOMContent(el)
+    .addTo(map)
 }
 
 watch(() => route.path, newPath => {
