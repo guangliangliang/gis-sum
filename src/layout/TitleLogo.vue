@@ -19,7 +19,7 @@ const collapse = computed(() => appStore.getCollapse)
 
 <style scoped lang="scss">
 .logo-title {
-  padding: 0 10px 12px;
+  padding: 16px 14px 14px;
   position: relative;
 
   @include flex-center;
@@ -32,12 +32,12 @@ const collapse = computed(() => appStore.getCollapse)
   }
 
   img {
-    width: 38px;
+    width: 32px;
   }
 
   .title {
-    font-size: 22px;
-    margin: 0 12px 0 5px;
+    font-size: 20px;
+    margin: 0 12px 0 8px;
   }
   
   &::after {
