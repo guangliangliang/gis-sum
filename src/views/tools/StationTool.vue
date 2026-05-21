@@ -80,7 +80,7 @@ function addStationMarkersOpenlayer() {
 
   stationData.forEach(station => {
     const feature = new Feature({
-      geometry: new Point(fromLonLat([station.lng, station.lat]),
+      geometry: new Point(fromLonLat([station.lng, station.lat])),
       station: station
     })
     source.addFeature(feature)
