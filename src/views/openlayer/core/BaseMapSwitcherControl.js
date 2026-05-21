@@ -22,6 +22,8 @@ class BaseMapSwitcherControl extends Control {
   }
 
   renderElement() {
+    this.element.innerHTML = ''
+
     const button = document.createElement('button')
     button.innerHTML = '🌐'
     button.title = '底图切换'
@@ -35,7 +37,8 @@ class BaseMapSwitcherControl extends Control {
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     `
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation()
       this.showImage = !this.showImage
       this.updateMenuVisibility()
     })
@@ -45,7 +48,7 @@ class BaseMapSwitcherControl extends Control {
     const menu = document.createElement('div')
     menu.className = 'image-change-config-menu'
     menu.style.cssText = `
-      display: none;
+      display: ${this.showImage ? 'flex' : 'none'};
       background: white;
       padding: 10px;
       position: absolute;
@@ -59,7 +62,7 @@ class BaseMapSwitcherControl extends Control {
       const card = document.createElement('div')
       card.className = `single-image ${item.label === this.currentImage ? 'current-image' : ''}`
       card.style.cssText = `
-        border: 1px solid #dcdfe6;
+        border: 2px solid ${item.label === this.currentImage ? '#409eff' : '#dcdfe6'};
         border-radius: 5px;
         display: flex;
         flex-direction: column;
@@ -85,7 +88,8 @@ class BaseMapSwitcherControl extends Control {
         checkbox.style.cssText = `
           cursor: pointer;
         `
-        checkbox.addEventListener('change', () => {
+        checkbox.addEventListener('change', (e) => {
+          e.stopPropagation()
           this.nameChecked = checkbox.checked
           this.baseMapManager.setLabelVisible(this.nameChecked)
         })
@@ -113,13 +117,8 @@ class BaseMapSwitcherControl extends Control {
       `
       card.appendChild(labelSpan)
 
-      if (item.label !== this.currentImage) {
-        card.style.borderColor = '#dcdfe6'
-      } else {
-        card.style.borderColor = '#409eff'
-      }
-
-      card.addEventListener('click', () => {
+      card.addEventListener('click', (e) => {
+        e.stopPropagation()
         if (this.currentImage === item.label) {
           return
         }
