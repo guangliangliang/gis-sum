@@ -89,7 +89,7 @@ onUnmounted(() => {
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   padding: 16px;
-  min-width: 200px;
+  width: 220px;
 
   .tool-title {
     font-size: 14px;
