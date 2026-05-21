@@ -234,11 +234,18 @@ onUnmounted(() => removeStationMarkers())
 
 .tool-buttons {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-bottom: 16px;
 
   .el-button {
-    flex: 1;
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 12px;
+    
+    .el-icon {
+      margin-right: 6px;
+    }
   }
 }
 

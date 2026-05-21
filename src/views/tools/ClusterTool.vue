@@ -68,6 +68,11 @@ function handleClearCluster() {
     .el-button {
       width: 100%;
       justify-content: flex-start;
+      padding-left: 12px;
+      
+      .el-icon {
+        margin-right: 6px;
+      }
     }
   }
 }
