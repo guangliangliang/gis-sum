@@ -14,9 +14,28 @@ const routes = [
     path: '/',
     name: 'Layout',
     component: () => import('@/layout/index.vue'),
+    redirect: '/cluster',
     meta: {
       title: 'GIS地图平台'
-    }
+    },
+    children: [
+      {
+        path: 'cluster',
+        name: 'Cluster',
+        component: () => import('@/views/tools/ClusterTool.vue'),
+        meta: {
+          title: '点聚合'
+        }
+      },
+      {
+        path: 'draw',
+        name: 'Draw',
+        component: () => import('@/views/tools/DrawTool.vue'),
+        meta: {
+          title: '绘制点线面'
+        }
+      }
+    ]
   },
   {
     path: '/:pathMatch(.*)*',

@@ -11,7 +11,7 @@
         }"
       >
         <TitleLogo />
-        <Menu />
+        <Menu ref="menuRef" />
       </aside>
 
       <!-- 右侧主内容区域 -->
@@ -21,7 +21,11 @@
 
         <!-- 地图主体区域 -->
         <main class="main-content">
-          <MapContainer />
+          <MapContainer @map-ready="handleMapReady" />
+          <!-- 悬浮工具栏 -->
+          <div class="floating-toolbar">
+            <router-view />
+          </div>
         </main>
 
         <!-- 底部 -->
@@ -48,14 +52,18 @@
           'top-sidebar': true
         }"
       >
-        <Menu />
+        <Menu ref="menuRef" />
       </aside>
 
       <!-- 右侧主内容区域 -->
       <div class="main-wrapper top-wrapper">
         <!-- 地图主体区域 -->
         <main class="main-content">
-          <MapContainer />
+          <MapContainer @map-ready="handleMapReady" />
+          <!-- 悬浮工具栏 -->
+          <div class="floating-toolbar">
+            <router-view />
+          </div>
         </main>
 
         <!-- 底部 -->
@@ -78,7 +86,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAppStore } from '@/stores'
 import OHeader from './Header.vue'
 import Menu from './Menu/Menu.vue'
@@ -88,9 +96,16 @@ import MapContainer from '@/components/MapContainer/index.vue'
 
 const appStore = useAppStore()
 const layout = computed(() => appStore.getLayout)
+const menuRef = ref(null)
 
 const handleClickOutside = () => {
   appStore.setCollapse(true)
+}
+
+const handleMapReady = (instance) => {
+  if (menuRef.value && menuRef.value.setMapInstance) {
+    menuRef.value.setMapInstance(instance)
+  }
 }
 </script>
 
@@ -202,6 +217,14 @@ const handleClickOutside = () => {
   overflow: hidden;
   position: relative;
   background: #f0f0f0;
+}
+
+/* 悬浮工具栏 */
+.floating-toolbar {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
 }
 
 /* 底部 */

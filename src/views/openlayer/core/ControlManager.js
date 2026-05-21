@@ -13,7 +13,13 @@ class ControlManager {
    * @returns {ControlManager} 当前实例
    */
   addZoomControl(options = {}) {
-    const control = new Zoom(options)
+    const control = new Zoom({
+      ...options,
+      className: 'ol-zoom-top-right'
+    })
+    control.element.style.top = '20px'
+    control.element.style.right = '20px'
+    control.element.style.left = 'auto'
     this.map.addControl(control)
     this.controls.set('zoom', control)
     return this
@@ -26,6 +32,9 @@ class ControlManager {
    */
   addFullscreenControl(options = {}) {
     const control = new FullScreen(options)
+    control.element.style.top = '80px'
+    control.element.style.right = '20px'
+    control.element.style.left = 'auto'
     this.map.addControl(control)
     this.controls.set('fullscreen', control)
     return this
@@ -41,6 +50,8 @@ class ControlManager {
       units: options.units || 'metric',
       ...options
     })
+    control.element.style.bottom = '20px'
+    control.element.style.left = '20px'
     this.map.addControl(control)
     this.controls.set('scale', control)
     return this
@@ -53,6 +64,9 @@ class ControlManager {
    */
   addBaseMapSwitcherControl(options = {}) {
     const control = new BaseMapSwitcherControl(options)
+    control.element.style.top = '110px'
+    control.element.style.right = '20px'
+    control.element.style.left = 'auto'
     this.map.addControl(control)
     this.controls.set('baseMapSwitcher', control)
     return this

@@ -286,7 +286,7 @@ class MapLayerManager {
   }
 
   /**
-   * 移除所有图层
+   * 移除所有自定义图层（保留底图）
    * @returns {MapLayerManager} 当前实例
    */
   removeAllLayers() {
@@ -294,6 +294,33 @@ class MapLayerManager {
       this.removeLayer(id)
     })
     return this
+  }
+
+  /**
+   * 清除地图上的所有自定义内容（聚合、绘制等）
+   * 这个方法用于切换菜单时清理地图
+   * @param {Object} mapInstance OpenlayerMap 实例
+   */
+  static clearMapContent(mapInstance) {
+    if (!mapInstance) return
+
+    // 清除聚合
+    const clusterManager = mapInstance.getClusterManager && mapInstance.getClusterManager()
+    if (clusterManager && clusterManager.clearCluster) {
+      clusterManager.clearCluster()
+    }
+
+    // 清除绘制
+    const drawManager = mapInstance.getDrawManager && mapInstance.getDrawManager()
+    if (drawManager && drawManager.removeDrawLayer) {
+      drawManager.removeDrawLayer()
+    }
+
+    // 清除其他图层
+    const layerManager = mapInstance.getLayerManager && mapInstance.getLayerManager()
+    if (layerManager && layerManager.removeAllLayers) {
+      layerManager.removeAllLayers()
+    }
   }
 
   /**

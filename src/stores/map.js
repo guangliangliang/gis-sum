@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
+import { markRaw } from 'vue'
 
 export const useMapStore = defineStore('map', {
   state: () => ({
     // 当前地图类型: 'openlayer' | 'mapbox' | 'gaode' | 'cesium'
     currentMapType: 'openlayer',
-    // 各地图实例缓存
+    // 各地图实例缓存 (用 markRaw 避免响应式代理)
     mapInstances: {},
     // 各地图是否就绪
     mapReadyStatus: {},
@@ -41,7 +42,7 @@ export const useMapStore = defineStore('map', {
      * @param {Object} instance - 地图实例对象
      */
     setMapInstance(instance) {
-      this.mapInstances[this.currentMapType] = instance
+      this.mapInstances[this.currentMapType] = markRaw(instance)
       this.mapReadyStatus[this.currentMapType] = true
       console.log(`[MapStore] ${this.currentMapType} 地图实例已设置`)
     },

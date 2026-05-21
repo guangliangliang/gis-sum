@@ -5,8 +5,6 @@ class BaseMapSwitcherControl extends Control {
   constructor(options = {}) {
     const element = document.createElement('div')
     element.className = 'ol-unselectable ol-control ol-base-map-switcher'
-    element.style.top = '80px'
-    element.style.right = '10px'
 
     super({
       element,
@@ -27,16 +25,6 @@ class BaseMapSwitcherControl extends Control {
     const button = document.createElement('button')
     button.innerHTML = '🌐'
     button.title = '底图切换'
-    button.style.cssText = `
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
-      border: none;
-      border-radius: 4px;
-      background: white;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    `
     button.addEventListener('click', (e) => {
       e.stopPropagation()
       this.showImage = !this.showImage
@@ -52,10 +40,11 @@ class BaseMapSwitcherControl extends Control {
       background: white;
       padding: 10px;
       position: absolute;
-      right: 30px;
+      right: 100%;
       top: 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       border-radius: 4px;
+      margin-right: 5px;
     `
 
     imageConfigs.forEach((item) => {

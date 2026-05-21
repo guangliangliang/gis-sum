@@ -7,6 +7,8 @@ import CoordinateHelper from './CoordinateHelper'
 import MapLayerManager from './MapLayerManager'
 import ProjectionManager from './ProjectionManager'
 import BaseMapManager from './BaseMapManager'
+import ClusterManager from './ClusterManager'
+import DrawManager from './DrawManager'
 
 class OpenlayerMap {
   constructor(container, options = {}) {
@@ -23,6 +25,8 @@ class OpenlayerMap {
     this.layerManager = null
     this.projectionManager = null
     this.baseMapManager = null
+    this.clusterManager = null
+    this.drawManager = null
   }
 
   /**
@@ -35,10 +39,11 @@ class OpenlayerMap {
       return new Promise((resolve) => {
         // 放到下一个宏任务执行，不阻塞UI渲染
         setTimeout(() => {
-          // 初始化地图实例
+          // 初始化地图实例 - 禁用默认控件
           this.map = new Map({
             target: this.container,
             layers: [],
+            controls: [], // 禁用所有默认控件
             view: new View({
               center: fromLonLat(this.options.center),
               zoom: this.options.zoom,
@@ -70,6 +75,8 @@ class OpenlayerMap {
     this.layerManager = new MapLayerManager(this.map)
     this.projectionManager = new ProjectionManager(this.map)
     this.baseMapManager = new BaseMapManager(this.map)
+    this.clusterManager = new ClusterManager(this.map)
+    this.drawManager = new DrawManager(this.map)
     this.baseMapManager.initDefaultBaseMap()
   }
 
@@ -119,6 +126,22 @@ class OpenlayerMap {
    */
   getProjectionManager() {
     return this.projectionManager
+  }
+
+  /**
+   * 获取点聚合管理器
+   * @returns {ClusterManager} 点聚合管理器实例
+   */
+  getClusterManager() {
+    return this.clusterManager
+  }
+
+  /**
+   * 获取绘制管理器
+   * @returns {DrawManager} 绘制管理器实例
+   */
+  getDrawManager() {
+    return this.drawManager
   }
 
   /**
@@ -182,6 +205,14 @@ class OpenlayerMap {
     if (this.projectionManager) {
       this.projectionManager.destroy()
       this.projectionManager = null
+    }
+    if (this.clusterManager) {
+      this.clusterManager.destroy()
+      this.clusterManager = null
+    }
+    if (this.drawManager) {
+      this.drawManager.destroy()
+      this.drawManager = null
     }
 
     // 销毁地图实例
