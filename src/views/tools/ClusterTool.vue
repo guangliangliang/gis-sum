@@ -69,6 +69,7 @@ function handleClearCluster() {
       width: 100%;
       justify-content: flex-start;
       padding-left: 12px;
+      margin-left: 0 !important;
       
       .el-icon {
         margin-right: 6px;
