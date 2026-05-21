@@ -71,21 +71,21 @@ function clearMapContent() {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px 8px 8px;
+  padding: 12px 8px 8px;
 }
 
 .menu-options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .menu-option {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
-  border-radius: 12px;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.25s ease;
   text-decoration: none;
@@ -100,23 +100,23 @@ function clearMapContent() {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 4px;
+    width: 3px;
     height: 0;
     background: linear-gradient(to bottom, var(--el-color-primary), #85ce61);
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 3px 3px 0;
     transition: height 0.25s ease;
   }
 
   &.collapsed {
     justify-content: center;
-    padding: 14px;
+    padding: 10px;
     
     &::before {
       left: 50%;
       top: 0;
       transform: translateX(-50%);
       width: 0;
-      height: 4px;
+      height: 3px;
     }
   }
 
@@ -142,15 +142,15 @@ function clearMapContent() {
 }
 
 .menu-icon {
-  font-size: 22px;
+  font-size: 20px;
   flex-shrink: 0;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
 }
 
 .menu-text {
-  font-size: 15px;
+  font-size: 14px;
   white-space: nowrap;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 /* 暗黑模式适配 */

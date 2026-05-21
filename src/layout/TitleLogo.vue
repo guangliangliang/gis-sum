@@ -44,10 +44,10 @@ const collapse = computed(() => appStore.getCollapse)
     content: '';
     position: absolute;
     bottom: 0;
-    left: 20px;
-    right: 20px;
+    left: 8px;
+    right: 8px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--el-border-color), transparent);
+    background: var(--el-border-color);
   }
 }
 
