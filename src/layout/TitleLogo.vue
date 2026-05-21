@@ -19,7 +19,7 @@ const collapse = computed(() => appStore.getCollapse)
 
 <style scoped lang="scss">
 .logo-title {
-  padding: 0 10px;
+  padding: 0 10px 16px;
 
   @include flex-center;
 
