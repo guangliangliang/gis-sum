@@ -15,7 +15,7 @@
     </div>
 
     <!-- 中间：地图引擎切换器 -->
-    <div v-if="false" class="header-center">
+    <div class="header-center">
       <div class="map-switcher">
         <div
           v-for="map in mapEngines"
