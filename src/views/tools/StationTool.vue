@@ -47,6 +47,7 @@ const markersAdded = ref(false)
 let stationLayer = null
 let popupOverlay = null
 let clickHandler = null
+let iconLoaded = false
 
 function addStationMarkers() {
   if (!mapInstance.value) {
@@ -120,7 +121,7 @@ function addStationMarkersOpenlayer() {
   map.on('click', clickHandler)
 }
 
-function addStationMarkersMapbox() {
+async function addStationMarkersMapbox() {
   const map = mapInstance.value.getMap()
 
   const features = stationData.map(station => ({
@@ -129,6 +130,25 @@ function addStationMarkersMapbox() {
     geometry: { type: 'Point', coordinates: [station.lng, station.lat] }
   }))
 
+  if (!iconLoaded) {
+    try {
+      await new Promise((resolve, reject) => {
+        map.loadImage('/marker.svg', (error, image) => {
+          if (error) {
+            console.error('图标加载失败:', error)
+            reject(error)
+          } else {
+            map.addImage('custom-marker', image)
+            iconLoaded = true
+            resolve()
+          }
+        })
+      })
+    } catch (e) {
+      console.error('加载图标出错:', e)
+    }
+  }
+
   map.addSource('station-source', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features }
@@ -136,13 +156,12 @@ function addStationMarkersMapbox() {
 
   map.addLayer({
     id: 'station-layer',
-    type: 'circle',
+    type: 'symbol',
     source: 'station-source',
-    paint: {
-      'circle-radius': 10,
-      'circle-color': '#409eff',
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': 3
+    layout: {
+      'icon-image': 'custom-marker',
+      'icon-size': 1,
+      'icon-anchor': 'bottom'
     }
   })
 
