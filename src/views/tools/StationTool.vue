@@ -80,7 +80,7 @@ function addStationMarkersOpenlayer() {
 
   stationData.forEach(station => {
     const feature = new Feature({
-      geometry: new Point(fromLonLat([station.lng, station.lat])),
+      geometry: new Point(fromLonLat([station.lng, station.lat]),
       station: station
     })
     source.addFeature(feature)
@@ -136,12 +136,13 @@ function addStationMarkersMapbox() {
 
   map.addLayer({
     id: 'station-layer',
-    type: 'symbol',
+    type: 'circle',
     source: 'station-source',
-    layout: {
-      'icon-image': 'marker-15',
-      'icon-size': 1.5,
-      'icon-anchor': 'bottom'
+    paint: {
+      'circle-radius': 10,
+      'circle-color': '#409eff',
+      'circle-stroke-color': '#ffffff',
+      'circle-stroke-width': 3
     }
   })
 
