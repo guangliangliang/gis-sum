@@ -1,5 +1,4 @@
 import { FullScreen, ScaleLine, Zoom } from 'ol/control'
-import MapSwitcherControl from './MapSwitcherControl'
 
 class ControlManager {
   constructor(map) {
@@ -43,18 +42,6 @@ class ControlManager {
     })
     this.map.addControl(control)
     this.controls.set('scale', control)
-    return this
-  }
-
-  /**
-   * 添加地图切换控件
-   * @param {Object} options 控件选项
-   * @returns {ControlManager} 当前实例
-   */
-  addMapSwitcherControl(options = {}) {
-    const control = new MapSwitcherControl(options)
-    this.map.addControl(control)
-    this.controls.set('mapSwitcher', control)
     return this
   }
 
