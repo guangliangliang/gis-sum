@@ -1,4 +1,5 @@
 const MAPBOX_TOKEN = import.meta.env.VITE_APP_MAPBOX
 const GAODE_TOKEN = import.meta.env.VITE_APP_GAODE
+const TIANDITU_TOKEN = import.meta.env.VITE_APP_TIANDITU
 
-export { MAPBOX_TOKEN, GAODE_TOKEN }
+export { MAPBOX_TOKEN, GAODE_TOKEN, TIANDITU_TOKEN }

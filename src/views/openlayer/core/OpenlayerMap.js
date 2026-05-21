@@ -1,12 +1,12 @@
 import { Map, View } from 'ol'
 import 'ol/ol.css'
 import { Tile as TileLayer } from 'ol/layer'
-import { OSM } from 'ol/source'
 import { fromLonLat } from 'ol/proj'
 import ControlManager from './ControlManager'
 import CoordinateHelper from './CoordinateHelper'
 import MapLayerManager from './MapLayerManager'
 import ProjectionManager from './ProjectionManager'
+import BaseMapManager from './BaseMapManager'
 
 class OpenlayerMap {
   constructor(container, options = {}) {
@@ -22,6 +22,7 @@ class OpenlayerMap {
     this.coordinateHelper = null
     this.layerManager = null
     this.projectionManager = null
+    this.baseMapManager = null
   }
 
   /**
@@ -37,11 +38,7 @@ class OpenlayerMap {
           // 初始化地图实例
           this.map = new Map({
             target: this.container,
-            layers: [
-              new TileLayer({
-                source: new OSM()
-              })
-            ],
+            layers: [],
             view: new View({
               center: fromLonLat(this.options.center),
               zoom: this.options.zoom,
@@ -72,6 +69,16 @@ class OpenlayerMap {
     this.coordinateHelper = new CoordinateHelper(this.map)
     this.layerManager = new MapLayerManager(this.map)
     this.projectionManager = new ProjectionManager(this.map)
+    this.baseMapManager = new BaseMapManager(this.map)
+    this.baseMapManager.initDefaultBaseMap()
+  }
+
+  /**
+   * 获取底图管理器
+   * @returns {BaseMapManager}
+   */
+  getBaseMapManager() {
+    return this.baseMapManager
   }
 
   /**

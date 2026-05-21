@@ -22,7 +22,13 @@ onMounted(async () => {
     await mapInstance.init()
 
     // 添加控件
-    mapInstance.getControlManager().addZoomControl().addFullscreenControl().addScaleControl()
+    mapInstance.getControlManager()
+      .addZoomControl()
+      .addFullscreenControl()
+      .addScaleControl()
+      .addBaseMapSwitcherControl({
+        baseMapManager: mapInstance.getBaseMapManager()
+      })
 
     // 通知父组件地图已就绪
     emit('map-ready', mapInstance)
