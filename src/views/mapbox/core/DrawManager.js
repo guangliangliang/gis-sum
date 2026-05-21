@@ -6,6 +6,7 @@ class DrawManager {
     this.sourceId = 'draw-source'
     this.layerId = 'draw-layer'
     this.currentType = null
+    this.features = []
   }
 
   startDraw(type) {
@@ -65,15 +66,21 @@ class DrawManager {
   }
 
   _addFeature(geometry) {
+    this.features.push({
+      type: 'Feature',
+      geometry,
+      properties: {}
+    })
+    this._updateSource()
+  }
+
+  _updateSource() {
     const source = this.map.getSource(this.sourceId)
     if (source) {
-      const data = source.getData()
-      data.features.push({
-        type: 'Feature',
-        geometry,
-        properties: {}
+      source.setData({
+        type: 'FeatureCollection',
+        features: this.features
       })
-      source.setData(data)
     }
   }
 
@@ -87,10 +94,8 @@ class DrawManager {
 
   clearDrawings() {
     this.stopDraw()
-    if (this.map.getSource(this.sourceId)) {
-      const source = this.map.getSource(this.sourceId)
-      source.setData({ type: 'FeatureCollection', features: [] })
-    }
+    this.features = []
+    this._updateSource()
   }
 
   removeDrawLayer() {

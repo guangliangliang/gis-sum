@@ -35,6 +35,7 @@ import { useMapStore } from '@/stores'
 import { stationData } from './stationData'
 import { useRoute } from 'vue-router'
 import { Plus, Delete } from '@element-plus/icons-vue'
+import mapboxgl from 'mapbox-gl'
 
 const mapStore = useMapStore()
 const route = useRoute()
@@ -335,7 +336,6 @@ function showPopupMapbox(station) {
   }
 
   const map = mapInstance.value.getMap()
-  const mapboxgl = window.mapboxgl
   popupOverlay = new mapboxgl.Popup({ closeOnClick: false })
     .setLngLat([station.lng, station.lat])
     .setDOMContent(el)
