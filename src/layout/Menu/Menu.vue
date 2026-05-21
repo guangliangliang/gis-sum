@@ -71,56 +71,101 @@ function clearMapContent() {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 12px 8px;
 }
 
 .menu-options {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .menu-option {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 6px;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   color: var(--el-text-color-regular);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: var(--el-color-primary);
+    border-radius: 0 3px 3px 0;
+    transition: height 0.3s ease;
+  }
 
   &.collapsed {
     justify-content: center;
-    padding: 10px;
+    padding: 12px;
+    
+    &::before {
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 0;
+      height: 3px;
+    }
   }
 
   &:hover {
-    background: var(--el-fill-color-light);
+    background: linear-gradient(135deg, var(--el-fill-color-light), rgba(144, 147, 153, 0.1));
+    transform: translateX(4px);
   }
 
   &.active {
-    background: var(--el-color-primary-light-9);
+    background: linear-gradient(135deg, var(--el-color-primary-light-9), var(--el-color-primary-light-8));
     color: var(--el-color-primary);
-    font-weight: 500;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.25);
+
+    &::before {
+      height: 60%;
+    }
+
+    &.collapsed::before {
+      width: 60%;
+    }
   }
 }
 
 .menu-icon {
-  font-size: 18px;
+  font-size: 20px;
   flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .menu-text {
-  font-size: 14px;
+  font-size: 15px;
   white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 /* 暗黑模式适配 */
 html.dark {
   .menu-container {
     background: var(--el-bg-color);
+  }
+  
+  .menu-option {
+    &:hover {
+      background: linear-gradient(135deg, var(--el-fill-color-light), rgba(144, 147, 153, 0.15));
+    }
+    
+    &.active {
+      box-shadow: 0 4px 12px rgba(64, 158, 255, 0.35);
+    }
   }
 }
 </style>
