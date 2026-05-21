@@ -160,7 +160,7 @@ async function addStationMarkersMapbox() {
     source: 'station-source',
     layout: {
       'icon-image': 'custom-marker',
-      'icon-size': 1,
+      'icon-size': 0.15,
       'icon-anchor': 'bottom'
     }
   })
