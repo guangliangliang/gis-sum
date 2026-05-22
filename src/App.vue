@@ -29,7 +29,7 @@ onUnmounted(() => {
 <template>
   <ConfigGlobal>
     <!-- 鼠标特效组件 -->
-    <MouseEffects v-if="false" />
+    <!-- <MouseEffects v-if="false" /> -->
     <router-view></router-view>
   </ConfigGlobal>
 </template>

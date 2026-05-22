@@ -9,7 +9,12 @@
  * }
  */
 
+// 导入大屏路由
+import dashboardRoutes from './modules/dashboard'
+
 const routes = [
+  // 新绛县数字孪生一张图（独立全屏布局）
+  ...dashboardRoutes,
   {
     path: '/',
     name: 'Layout',

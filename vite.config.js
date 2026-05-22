@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
     base: env.VITE_APP_PRE_URL,
     server: {
       host: true, // 或 '0.0.0.0'
-      strictPort: true, // 若端口被占用，自动 +1 找下一个可用端口
-      port: 5174 // 你想用的端口
+      strictPort: false, // 若端口被占用，自动 +1 找下一个可用端口
+      port: 5175 // 你想用的端口
     },
     plugins: [
       vue(),
