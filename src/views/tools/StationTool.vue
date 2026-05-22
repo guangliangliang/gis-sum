@@ -57,6 +57,7 @@ let popupOverlay = null
 let clickHandler = null
 let clickHandlerKey = null // OpenLayers 事件键
 let iconLoaded = false
+let markers = [] // 高德地图的标记数组
 
 function addStationMarkers() {
   if (!mapInstance.value) {
@@ -71,6 +72,8 @@ function addStationMarkers() {
     addStationMarkersOpenlayer()
   } else if (lastMapType === 'mapbox') {
     addStationMarkersMapbox()
+  } else if (lastMapType === 'gaode') {
+    addStationMarkersGaode()
   }
 
   markersAdded.value = true
@@ -226,6 +229,25 @@ function addStationMarkersMapbox() {
   }
 }
 
+function addStationMarkersGaode() {
+  const map = mapInstance.value.getMap()
+
+  stationData.forEach(station => {
+    const marker = new AMap.Marker({
+      position: [station.lng, station.lat],
+      title: station.name,
+      extData: station
+    })
+    
+    marker.on('click', () => {
+      showPopup(station)
+    })
+
+    markers.push(marker)
+    map.add(marker)
+  })
+}
+
 function removeStationMarkers() {
   if (!lastMapType) {
     markersAdded.value = false
@@ -265,6 +287,16 @@ function removeStationMarkers() {
       if (clickHandler && typeof map.off === 'function') {
         try { map.off('click', clickHandler) } catch (e) {}
         clickHandler = null
+      }
+    } else if (lastMapType === 'gaode') {
+      // 清理高德地图的资源
+      if (markers.length > 0) {
+        map.remove(markers)
+        markers = []
+      }
+      if (popupOverlay) {
+        popupOverlay.setMap(null)
+        popupOverlay = null
       }
     }
     
@@ -307,6 +339,9 @@ function flyToStation(station) {
       zoom: 15,
       speed: 0.8
     })
+  } else if (currentMapType.value === 'gaode') {
+    const map = mapInstance.value.getMap()
+    map.setZoomAndCenter(15, [station.lng, station.lat], true, 1000)
   }
 }
 
@@ -318,6 +353,8 @@ function showPopup(station) {
     showPopupOpenlayer(station)
   } else if (currentMapType.value === 'mapbox') {
     showPopupMapbox(station)
+  } else if (currentMapType.value === 'gaode') {
+    showPopupGaode(station)
   }
 }
 
@@ -390,6 +427,22 @@ function showPopupMapbox(station) {
     .addTo(map)
 }
 
+function showPopupGaode(station) {
+  if (popupOverlay) {
+    popupOverlay.setMap(null)
+  }
+
+  const map = mapInstance.value.getMap()
+  
+  const popupHtml = `<div style="padding:12px;"><h4 style="margin:0 0 10px;color:#333;">${station.name}</h4><p style="margin:6px 0;font-size:13px;color:#666;"><strong>地址:</strong>${station.address}</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>电话:</strong>${station.phone}</p><p style="margin:6px 0;font-size:13px;color:#666;"><strong>描述:</strong>${station.description}</p></div>`
+
+  popupOverlay = new AMap.InfoWindow({
+    content: popupHtml,
+    offset: new AMap.Pixel(0, -50)
+  })
+  popupOverlay.open(map, [station.lng, station.lat])
+}
+
 watch(() => route.path, newPath => {
   if (newPath !== '/station') removeStationMarkers()
 }, { immediate: true })
@@ -426,6 +479,14 @@ watch(currentMapType, (newType, oldType) => {
           }
           if (clickHandler && typeof oldMap.off === 'function') {
             oldMap.off('click', clickHandler)
+          }
+        } else if (oldType === 'gaode') {
+          if (markers.length > 0) {
+            oldMap.remove(markers)
+            markers = []
+          }
+          if (popupOverlay) {
+            popupOverlay.setMap(null)
           }
         }
       } catch (e) {

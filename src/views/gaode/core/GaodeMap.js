@@ -4,13 +4,15 @@ import ControlManager from './ControlManager'
 import CoordinateHelper from './CoordinateHelper'
 import MapLayerManager from './MapLayerManager'
 import ProjectionManager from './ProjectionManager'
+import ClusterManager from './ClusterManager'
+import DrawManager from './DrawManager'
 import { GAODE_TOKEN } from '@/config/token'
 
 class GaodeMap {
   constructor(container, options = {}) {
     this.container = container
     this.options = {
-      key: options.key || GAODE_TOKEN, // 默认key，生产环境请替换
+      key: options.key || GAODE_TOKEN,
       version: options.version || '2.0',
       center: options.center || [116.397428, 39.90923],
       zoom: options.zoom || 12,
@@ -21,6 +23,8 @@ class GaodeMap {
     this.coordinateHelper = null
     this.layerManager = null
     this.projectionManager = null
+    this.clusterManager = null
+    this.drawManager = null
   }
 
   /**
@@ -48,11 +52,11 @@ class GaodeMap {
 
       // 加载高德地图 API
       console.log('[GaodeMap] 调用 AMapLoader.load...')
-      await AMapLoader.load({
-        key: this.options.key,
-        version: this.options.version,
-        plugins: ['AMap.Scale', 'AMap.Geolocation', 'AMap.MapType']
-      })
+    await AMapLoader.load({
+      key: this.options.key,
+      version: this.options.version,
+      plugins: ['AMap.Scale', 'AMap.Geolocation', 'AMap.MapType', 'AMap.MouseTool', 'AMap.MarkerClusterer']
+    })
       console.log('[GaodeMap] 高德地图 API 加载成功')
 
       // 初始化地图实例
@@ -84,6 +88,8 @@ class GaodeMap {
     this.coordinateHelper = new CoordinateHelper(this.map)
     this.layerManager = new MapLayerManager(this.map)
     this.projectionManager = new ProjectionManager(this.map)
+    this.clusterManager = new ClusterManager(this.map)
+    this.drawManager = new DrawManager(this.map)
   }
 
   /**
@@ -124,6 +130,14 @@ class GaodeMap {
    */
   getProjectionManager() {
     return this.projectionManager
+  }
+
+  getClusterManager() {
+    return this.clusterManager
+  }
+
+  getDrawManager() {
+    return this.drawManager
   }
 
   /**
@@ -175,6 +189,14 @@ class GaodeMap {
     if (this.projectionManager) {
       this.projectionManager.destroy()
       this.projectionManager = null
+    }
+    if (this.clusterManager) {
+      this.clusterManager.destroy()
+      this.clusterManager = null
+    }
+    if (this.drawManager) {
+      this.drawManager.destroy()
+      this.drawManager = null
     }
 
     // 销毁地图实例

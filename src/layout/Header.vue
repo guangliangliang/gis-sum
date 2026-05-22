@@ -61,8 +61,7 @@ const { collapse } = storeToRefs(appStore)
 const mapEngines = [
   { type: 'openlayer', name: 'OpenLayers', icon: '🗺️' },
   { type: 'mapbox', name: 'Mapbox GL', icon: '📍' },
-  // { type: 'gaode', name: '高德地图', icon: '📌' },
-  // { type: 'cesium', name: 'Cesium 3D', icon: '🌍' }
+  { type: 'gaode', name: '高德地图', icon: '📌' }
 ]
 
 const currentMapType = computed(() => mapStore.getCurrentMapType)
