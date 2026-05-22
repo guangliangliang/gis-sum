@@ -15,7 +15,7 @@ onMounted(async () => {
   try {
     // 初始化 Cesium 3D 地图
     mapInstance = new CesiumMap(mapContainer.value, {
-      center: [116.397428, 39.90923],
+      center: [116.397428, 39.90923, 15000000],
       zoom: 12
     })
 
@@ -34,7 +34,7 @@ onMounted(async () => {
 onActivated(() => {
   // 组件被激活时，清理所有非底图内容
   if (mapInstance) {
-    const viewer = mapInstance.getViewer()
+    const viewer = mapInstance.getMap()
     if (viewer) {
       // 清理聚合
       const clusterManager = mapInstance.getClusterManager && mapInstance.getClusterManager()

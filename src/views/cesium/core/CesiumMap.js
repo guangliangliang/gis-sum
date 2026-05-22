@@ -1,17 +1,21 @@
-window.CESIUM_BASE_URL = '/cesium/'
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
+
+// 禁用默认 Ion 访问
+Cesium.Ion.defaultAccessToken = undefined
 
 import ControlManager from './ControlManager'
 import CoordinateHelper from './CoordinateHelper'
 import MapLayerManager from './MapLayerManager'
 import ProjectionManager from './ProjectionManager'
+import ClusterManager from './ClusterManager'
+import DrawManager from './DrawManager'
 
 class CesiumMap {
   constructor(container, options = {}) {
     this.container = container
     this.options = {
-      center: options.center || [116.397428, 39.90923, 1000],
+      center: options.center || [116.397428, 39.90923, 15000000],
       zoom: options.zoom || 12,
       ...options
     }
@@ -20,39 +24,46 @@ class CesiumMap {
     this.coordinateHelper = null
     this.layerManager = null
     this.projectionManager = null
+    this.clusterManager = null
+    this.drawManager = null
   }
 
-  /**
-   * 初始化地图
-   * @returns {Promise<CesiumMap>} 当前实例
-   */
   async init() {
     try {
-      // 准备Viewer选项
-      const viewerOptions = {
+      // 创建最简单的 Viewer 配置 - 禁用 Ion 底图
+      this.viewer = new Cesium.Viewer(this.container, {
         animation: false,
-        baseLayerPicker: true,
-        fullscreenButton: true,
+        baseLayerPicker: false,
+        fullscreenButton: false,
         geocoder: false,
-        homeButton: true,
+        homeButton: false,
         infoBox: true,
-        sceneModePicker: true,
-        selectionIndicator: true,
+        sceneModePicker: false,
+        selectionIndicator: false,
         timeline: false,
         navigationHelpButton: false,
-        ...this.options
-      }
+        vrButton: false,
+        scene3DOnly: true,
+        terrainProvider: undefined
+      })
 
-      // 初始化Cesium Viewer
-      this.viewer = new Cesium.Viewer(this.container, viewerOptions)
+      // 清除默认底图，添加 OpenStreetMap 底图
+      this.viewer.imageryLayers.removeAll()
+      this.viewer.imageryLayers.addImageryProvider(
+        new Cesium.OpenStreetMapImageryProvider({
+          url: 'https://a.tile.openstreetmap.org/'
+        })
+      )
 
-      // 设置初始视图
-      const [lng, lat, height] = this.options.center
+      // 隐藏 logo
+      this.viewer.cesiumWidget.creditContainer.style.display = 'none'
+
+      // 设置初始位置 - 北京附近
       this.viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(lng, lat, height),
+        destination: Cesium.Cartesian3.fromDegrees(116.397428, 39.90923, 1000000),
         orientation: {
           heading: Cesium.Math.toRadians(0),
-          pitch: Cesium.Math.toRadians(-90),
+          pitch: Cesium.Math.toRadians(-45),
           roll: 0
         }
       })
@@ -68,63 +79,43 @@ class CesiumMap {
     }
   }
 
-  /**
-   * 初始化工具类
-   * @private
-   */
   initManagers() {
     this.controlManager = new ControlManager(this.viewer)
     this.coordinateHelper = new CoordinateHelper(this.viewer)
     this.layerManager = new MapLayerManager(this.viewer)
     this.projectionManager = new ProjectionManager(this.viewer)
+    this.clusterManager = new ClusterManager(this.viewer)
+    this.drawManager = new DrawManager(this.viewer)
   }
 
-  /**
-   * 获取地图实例
-   * @returns {Object} Cesium Viewer实例
-   */
   getMap() {
     return this.viewer
   }
 
-  /**
-   * 获取控件管理器
-   * @returns {ControlManager} 控件管理器实例
-   */
   getControlManager() {
     return this.controlManager
   }
 
-  /**
-   * 获取坐标辅助类
-   * @returns {CoordinateHelper} 坐标辅助类实例
-   */
   getCoordinateHelper() {
     return this.coordinateHelper
   }
 
-  /**
-   * 获取图层管理器
-   * @returns {MapLayerManager} 图层管理器实例
-   */
   getLayerManager() {
     return this.layerManager
   }
 
-  /**
-   * 获取投影管理器
-   * @returns {ProjectionManager} 投影管理器实例
-   */
   getProjectionManager() {
     return this.projectionManager
   }
 
-  /**
-   * 设置地图中心
-   * @param {Array<number>} center 中心点经纬度 [lng, lat, height]
-   * @param {number} duration 动画持续时间（秒）
-   * @returns {CesiumMap} 当前实例
-   */
+  getClusterManager() {
+    return this.clusterManager
+  }
+
+  getDrawManager() {
+    return this.drawManager
+  }
+
   setCenter(center, duration = 1) {
     if (this.viewer) {
       const [lng, lat, height = 1000] = center
@@ -136,18 +127,14 @@ class CesiumMap {
     return this
   }
 
-  /**
-   * 销毁地图
-   */
   destroy() {
-    // 销毁工具类
-    if (this.controlManager) {
-      this.controlManager.destroy()
-      this.controlManager = null
+    if (this.clusterManager) {
+      this.clusterManager.destroy()
+      this.clusterManager = null
     }
-    if (this.coordinateHelper) {
-      this.coordinateHelper.destroy()
-      this.coordinateHelper = null
+    if (this.drawManager) {
+      this.drawManager.destroy()
+      this.drawManager = null
     }
     if (this.layerManager) {
       this.layerManager.removeAllLayers()
@@ -158,8 +145,15 @@ class CesiumMap {
       this.projectionManager.destroy()
       this.projectionManager = null
     }
+    if (this.coordinateHelper) {
+      this.coordinateHelper.destroy()
+      this.coordinateHelper = null
+    }
+    if (this.controlManager) {
+      this.controlManager.destroy()
+      this.controlManager = null
+    }
 
-    // 销毁地图实例
     if (this.viewer) {
       this.viewer.destroy()
       this.viewer = null

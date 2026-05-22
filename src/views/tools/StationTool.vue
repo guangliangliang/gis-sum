@@ -43,6 +43,7 @@ import { Point } from 'ol/geom'
 import { fromLonLat } from 'ol/proj'
 import { Style, Icon } from 'ol/style'
 import { Overlay } from 'ol'
+import * as Cesium from 'cesium'
 
 const mapStore = useMapStore()
 const route = useRoute()
@@ -58,6 +59,8 @@ let clickHandler = null
 let clickHandlerKey = null // OpenLayers 事件键
 let iconLoaded = false
 let markers = [] // 高德地图的标记数组
+let cesiumEntities = [] // Cesium 的实体数组
+let cesiumHandler = null // Cesium 的事件处理器
 
 function addStationMarkers() {
   if (!mapInstance.value) {
@@ -74,6 +77,8 @@ function addStationMarkers() {
     addStationMarkersMapbox()
   } else if (lastMapType === 'gaode') {
     addStationMarkersGaode()
+  } else if (lastMapType === 'cesium') {
+    addStationMarkersCesium()
   }
 
   markersAdded.value = true
@@ -248,6 +253,44 @@ function addStationMarkersGaode() {
   })
 }
 
+function addStationMarkersCesium() {
+  const viewer = mapInstance.value.getMap()
+
+  stationData.forEach(station => {
+    const entity = viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(station.lng, station.lat),
+      billboard: {
+        image: '/marker.svg',
+        scale: 1
+      }
+    })
+    cesiumEntities.push(entity)
+  })
+
+  cesiumHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+  cesiumHandler.setInputAction((movement) => {
+    const pickedObject = viewer.scene.pick(movement.position)
+    if (Cesium.defined(pickedObject) && pickedObject.id) {
+      // 查找匹配的站点
+      const pickedEntity = pickedObject.id
+      const station = stationData.find(s => {
+        const pos = Cesium.Cartographic.fromCartesian(pickedEntity.position.getValue())
+        const lng = Cesium.Math.toDegrees(pos.longitude)
+        const lat = Cesium.Math.toDegrees(pos.latitude)
+        return Math.abs(lng - s.lng) < 0.001 && Math.abs(lat - s.lat) < 0.001
+      })
+      
+      if (station) {
+        showPopup(station)
+      }
+    } else {
+      // 点击空白处关闭弹窗
+      removeCesiumPopup()
+      activeStation.value = null
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+}
+
 function removeStationMarkers() {
   if (!lastMapType) {
     markersAdded.value = false
@@ -298,6 +341,22 @@ function removeStationMarkers() {
         popupOverlay.setMap(null)
         popupOverlay = null
       }
+    } else if (lastMapType === 'cesium') {
+      // 清理 Cesium 的资源
+      if (cesiumEntities.length > 0) {
+        const viewer = mapInstance.value.getMap()
+        cesiumEntities.forEach(entity => {
+          viewer.entities.remove(entity)
+        })
+        cesiumEntities = []
+      }
+      if (cesiumHandler) {
+        cesiumHandler.destroy()
+        cesiumHandler = null
+      }
+      if (popupOverlay && popupOverlay.destroy) {
+        popupOverlay.destroy()
+      }
     }
     
     // 清理 popup DOM 元素
@@ -342,6 +401,39 @@ function flyToStation(station) {
   } else if (currentMapType.value === 'gaode') {
     const map = mapInstance.value.getMap()
     map.setZoomAndCenter(15, [station.lng, station.lat], true, 1000)
+  } else if (currentMapType.value === 'cesium') {
+    const viewer = mapInstance.value.getMap()
+    
+    // 找到对应的entity
+    const targetEntity = cesiumEntities.find(e => {
+      const pos = Cesium.Cartographic.fromCartesian(e.position.getValue())
+      const lng = Cesium.Math.toDegrees(pos.longitude)
+      const lat = Cesium.Math.toDegrees(pos.latitude)
+      return Math.abs(lng - station.lng) < 0.001 && Math.abs(lat - station.lat) < 0.001
+    })
+    
+    // 如果找到了entity，让camera飞向它
+    if (targetEntity) {
+      viewer.flyTo(targetEntity, {
+        duration: 2,
+        offset: new Cesium.HeadingPitchRange(
+          Cesium.Math.toRadians(0),
+          Cesium.Math.toRadians(-90),
+          5000
+        )
+      })
+    } else {
+      // 否则用原来的方式
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(station.lng, station.lat, 5000),
+        orientation: {
+          heading: Cesium.Math.toRadians(0),
+          pitch: Cesium.Math.toRadians(-90),
+          roll: 0
+        },
+        duration: 2
+      })
+    }
   }
 }
 
@@ -355,6 +447,8 @@ function showPopup(station) {
     showPopupMapbox(station)
   } else if (currentMapType.value === 'gaode') {
     showPopupGaode(station)
+  } else if (currentMapType.value === 'cesium') {
+    showPopupCesium(station)
   }
 }
 
@@ -443,6 +537,37 @@ function showPopupGaode(station) {
   popupOverlay.open(map, [station.lng, station.lat])
 }
 
+function showPopupCesium(station) {
+  const viewer = mapInstance.value.getMap()
+  
+  // 先移除旧的弹窗
+  removeCesiumPopup()
+  
+  // 使用Cesium自带的infoBox
+  viewer.selectedEntity = new Cesium.Entity({
+    position: Cesium.Cartesian3.fromDegrees(station.lng, station.lat),
+    description: '<div style="padding:10px;">' + 
+      '<h4 style="margin:0 0 8px;">' + station.name + '</h4>' + 
+      '<p style="margin:4px 0;font-size:12px;"><strong>地址:</strong>' + station.address + '</p>' + 
+      '<p style="margin:4px 0;font-size:12px;"><strong>电话:</strong>' + station.phone + '</p>' + 
+      '<p style="margin:4px 0;font-size:12px;"><strong>描述:</strong>' + station.description + '</p>' + 
+      '</div>'
+  })
+  
+  // 保存引用
+  popupOverlay = {
+    destroy: () => {
+      viewer.selectedEntity = undefined
+      removeCesiumPopup()
+    }
+  }
+}
+
+function removeCesiumPopup() {
+  // 清理引用
+  popupOverlay = null
+}
+
 watch(() => route.path, newPath => {
   if (newPath !== '/station') removeStationMarkers()
 }, { immediate: true })
@@ -487,6 +612,20 @@ watch(currentMapType, (newType, oldType) => {
           }
           if (popupOverlay) {
             popupOverlay.setMap(null)
+          }
+        } else if (oldType === 'cesium') {
+          if (cesiumEntities.length > 0) {
+            cesiumEntities.forEach(entity => {
+              oldMap.entities.remove(entity)
+            })
+            cesiumEntities = []
+          }
+          if (cesiumHandler) {
+            cesiumHandler.destroy()
+            cesiumHandler = null
+          }
+          if (popupOverlay && popupOverlay.destroy) {
+            popupOverlay.destroy()
           }
         }
       } catch (e) {
