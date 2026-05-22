@@ -78,6 +78,8 @@ const handleSwitchMap = (type) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/mixins' as *;
+
 .gis-header {
   display: flex;
   align-items: center;
@@ -97,9 +99,14 @@ const handleSwitchMap = (type) => {
 
   .collapse-icon {
     cursor: pointer;
-    padding: 4px;
+    padding: 8px;
     border-radius: 4px;
     transition: background-color 0.2s;
+    min-height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       background: var(--el-fill-color-light);
@@ -151,6 +158,7 @@ const handleSwitchMap = (type) => {
       cursor: pointer;
       transition: all 0.2s ease;
       color: var(--el-text-color-regular);
+      min-height: 36px;
 
       &:hover {
         background: var(--el-fill-color);
@@ -195,6 +203,41 @@ html.dark {
 
       .map-btn:hover {
         background: var(--el-fill-color-light);
+      }
+    }
+  }
+}
+
+/* 移动端适配 */
+@include mobile {
+  .gis-header {
+    height: 56px;
+    padding: 0 12px;
+  }
+
+  .header-left {
+    .logo-title {
+      .title {
+        display: none;
+      }
+    }
+  }
+
+  .header-center {
+    padding: 0 8px;
+
+    .map-switcher {
+      .map-btn {
+        padding: 8px 10px;
+        min-height: 40px;
+
+        .map-name {
+          display: none;
+        }
+
+        .map-icon {
+          font-size: 18px;
+        }
       }
     }
   }

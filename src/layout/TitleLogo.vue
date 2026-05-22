@@ -1,8 +1,8 @@
 <template>
   <div class="logo-title" @click.stop="() => $router.push('/')">
-    <a>
-      <img :src="logoSrc" />
-      <span v-if="!collapse || layout === 'topLeft'" class="title" v-text="baseTitle" />
+    <a class="logo-link">
+      <img :src="logoSrc" class="logo-img" />
+      <span v-if="!collapse && !mobile" class="title" v-text="baseTitle" />
     </a>
   </div>
 </template>
@@ -15,37 +15,50 @@ import { useAppStore } from '@/stores'
 const appStore = useAppStore()
 const layout = computed(() => appStore.getLayout)
 const collapse = computed(() => appStore.getCollapse)
+const mobile = computed(() => appStore.getMobile)
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/mixins' as *;
+
 .logo-title {
-  padding: 16px 14px 14px;
+  padding: 14px 12px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: var(--logo-height);
 
-  @include flex-center;
-
-  a {
-    @include flex-center;
-
+  .logo-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    justify-content: flex-start;
+    text-decoration: none;
+    gap: 8px;
+    white-space: nowrap;
   }
 
-  img {
-    width: 32px;
+  .logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 
   .title {
-    font-size: 20px;
-    margin: 0 12px 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
   }
   
   &::after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 8px;
-    right: 8px;
+    left: 12px;
+    right: 12px;
     height: 1px;
     background: var(--el-border-color);
   }
@@ -54,7 +67,18 @@ const collapse = computed(() => appStore.getCollapse)
 html.dark {
   .logo-title {
     background-color: var(--el-bg-color-overlay);
-    color: white;
+  }
+}
+
+@include mobile {
+  .logo-title {
+    padding: 12px 16px;
+    height: 56px;
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+    }
   }
 }
 </style>

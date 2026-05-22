@@ -30,6 +30,7 @@ const appStore = useAppStore()
 const route = useRoute()
 const collapse = computed(() => appStore.collapse)
 const layout = computed(() => appStore.getLayout)
+const mobile = computed(() => appStore.getMobile)
 
 // 菜单选项
 const menuOptions = [
@@ -42,6 +43,10 @@ const menuOptions = [
 function handleMenuClick(item) {
   // 清除地图内容
   clearMapContent()
+  // 移动端点击菜单后自动折叠
+  if (mobile.value) {
+    appStore.setCollapse(true)
+  }
 }
 
 // 清除地图内容
@@ -67,6 +72,8 @@ function clearMapContent() {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/mixins' as *;
+
 .menu-container {
   flex: 1;
   display: flex;
@@ -84,15 +91,16 @@ function clearMapContent() {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.08s ease;
   text-decoration: none;
   color: var(--el-text-color-regular);
   position: relative;
   overflow: hidden;
   border: 1px solid transparent;
+  min-height: 48px;
 
   &::before {
     content: '';
@@ -104,12 +112,12 @@ function clearMapContent() {
     height: 0;
     background: linear-gradient(to bottom, var(--el-color-primary), #85ce61);
     border-radius: 0 3px 3px 0;
-    transition: height 0.25s ease;
+    transition: height 0.08s ease;
   }
 
   &.collapsed {
     justify-content: center;
-    padding: 10px;
+    padding: 12px 10px;
     
     &::before {
       left: 50%;
@@ -142,13 +150,13 @@ function clearMapContent() {
 }
 
 .menu-icon {
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
 }
 
 .menu-text {
-  font-size: 14px;
+  font-size: 15px;
   white-space: nowrap;
   letter-spacing: 0.3px;
 }
@@ -167,6 +175,30 @@ html.dark {
     &.active {
       background: linear-gradient(135deg, rgba(64, 158, 255, 0.15), rgba(64, 158, 255, 0.08));
     }
+  }
+}
+
+/* 移动端适配 */
+@include mobile {
+  .menu-container {
+    padding: 16px 12px 12px;
+  }
+
+  .menu-options {
+    gap: 8px;
+  }
+
+  .menu-option {
+    padding: 14px 16px;
+    min-height: 52px;
+  }
+
+  .menu-icon {
+    font-size: 24px;
+  }
+
+  .menu-text {
+    font-size: 16px;
   }
 }
 </style>

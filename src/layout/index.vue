@@ -112,6 +112,8 @@ const handleMapReady = (instance) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/mixins' as *;
+
 .gis-layout {
   display: flex;
   height: 100vh;
@@ -152,8 +154,9 @@ const handleMapReady = (instance) => {
   border-right: 1px solid var(--el-border-color);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
+  transition: width 0.08s ease-out, transform 0.08s ease-out;
   z-index: 1000;
+  overflow: hidden;
 
   &.sidebar-collapse {
     width: var(--left-menu-min-width);
@@ -165,9 +168,13 @@ const handleMapReady = (instance) => {
     top: 0;
     z-index: 2000;
     transform: translateX(0);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    width: 260px !important;
+    transition: transform 0.2s ease-out;
 
     &.sidebar-collapse {
       transform: translateX(-100%);
+      width: 260px !important;
     }
   }
 
@@ -194,7 +201,7 @@ const handleMapReady = (instance) => {
     margin-top: 60px;
     width: calc(100% - var(--left-menu-max-width));
     height: calc(100% - 60px);
-    transition: margin-left 0.3s ease, width 0.3s ease;
+    transition: margin-left 0.08s ease, width 0.08s ease;
   }
 }
 
@@ -238,6 +245,7 @@ const handleMapReady = (instance) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
 }
 
 /* 手机端遮罩 */
@@ -249,6 +257,16 @@ const handleMapReady = (instance) => {
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1500;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* 暗黑模式适配 */
@@ -259,6 +277,42 @@ html.dark {
 
   .top-header {
     background: var(--el-bg-color-overlay);
+  }
+}
+
+/* 移动端适配 */
+@include mobile {
+  .sidebar {
+    width: 260px;
+  }
+
+  .header {
+    height: 56px;
+  }
+
+  .top-header {
+    height: 56px;
+  }
+
+  .sidebar.top-sidebar {
+    top: 56px;
+    height: calc(100% - 56px);
+  }
+
+  .main-wrapper.top-wrapper {
+    margin-top: 56px;
+    height: calc(100% - 56px);
+  }
+
+  .floating-toolbar {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+  }
+
+  .footer {
+    height: 26px;
+    font-size: 11px;
   }
 }
 </style>

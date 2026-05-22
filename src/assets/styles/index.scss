@@ -3,6 +3,7 @@
 @forward 'var';
 
 @use './base.scss';
+@use './responsive.scss';
 
 body {
   cursor: url('@/assets/images/mouse/arrows.png'), auto;

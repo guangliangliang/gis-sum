@@ -37,14 +37,15 @@ class CesiumMap {
         fullscreenButton: false,
         geocoder: false,
         homeButton: false,
-        infoBox: true,
+        infoBox: false,
         sceneModePicker: false,
         selectionIndicator: false,
         timeline: false,
         navigationHelpButton: false,
         vrButton: false,
         scene3DOnly: true,
-        terrainProvider: undefined
+        terrainProvider: undefined,
+        baseLayer: false
       })
 
       // 清除默认底图，添加 OpenStreetMap 底图
@@ -58,12 +59,12 @@ class CesiumMap {
       // 隐藏 logo
       this.viewer.cesiumWidget.creditContainer.style.display = 'none'
 
-      // 设置初始位置 - 北京附近
+      // 设置初始位置 - 二维俯视北京
       this.viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(116.397428, 39.90923, 1000000),
+        destination: Cesium.Cartesian3.fromDegrees(116.397428, 39.90923, 500000),
         orientation: {
           heading: Cesium.Math.toRadians(0),
-          pitch: Cesium.Math.toRadians(-45),
+          pitch: Cesium.Math.toRadians(-90),
           roll: 0
         }
       })
