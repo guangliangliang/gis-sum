@@ -7,12 +7,11 @@ class DrawManager {
     this.currentType = null
     this.features = []
     this.drawingCoords = []
+    this._initialized = false
   }
 
-  startDraw(type) {
-    this.stopDraw()
-    this.currentType = type
-    this.drawingCoords = []
+  _initLayers() {
+    if (this._initialized) return
 
     if (!this.map.getSource(this.sourceId)) {
       this.map.addSource(this.sourceId, {
@@ -21,8 +20,51 @@ class DrawManager {
       })
     }
 
-    this._removeAllLayers()
-    this._setupLayers(type)
+    this.map.addLayer({
+      id: 'draw-point',
+      type: 'circle',
+      source: this.sourceId,
+      filter: ['==', '$type', 'Point'],
+      paint: {
+        'circle-radius': 8,
+        'circle-color': '#409eff',
+        'circle-stroke-width': 3,
+        'circle-stroke-color': '#ffffff'
+      }
+    })
+
+    this.map.addLayer({
+      id: 'draw-line',
+      type: 'line',
+      source: this.sourceId,
+      filter: ['==', '$type', 'LineString'],
+      paint: {
+        'line-color': '#409eff',
+        'line-width': 4
+      }
+    })
+
+    this.map.addLayer({
+      id: 'draw-fill',
+      type: 'fill',
+      source: this.sourceId,
+      filter: ['==', '$type', 'Polygon'],
+      paint: {
+        'fill-color': '#409eff',
+        'fill-opacity': 0.3,
+        'fill-outline-color': '#409eff'
+      }
+    })
+
+    this._initialized = true
+  }
+
+  startDraw(type) {
+    this.stopDraw()
+    this.currentType = type
+    this.drawingCoords = []
+
+    this._initLayers()
     this._updateSource()
     this.map.getCanvas().style.cursor = 'crosshair'
 
@@ -80,87 +122,24 @@ class DrawManager {
     this._dblClickHandler = handleDblClick
   }
 
-  _removeAllLayers() {
-    if (this.map.getLayer('draw-fill')) this.map.removeLayer('draw-fill')
-    if (this.map.getLayer('draw-line')) this.map.removeLayer('draw-line')
-    if (this.map.getLayer('draw-point')) this.map.removeLayer('draw-point')
-  }
 
-  _setupLayers(type) {
-    if (type === 'point') {
-      this.map.addLayer({
-        id: 'draw-point',
-        type: 'circle',
-        source: this.sourceId,
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#409eff',
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#ffffff'
-        }
-      })
-    } else if (type === 'line') {
-      this.map.addLayer({
-        id: 'draw-line',
-        type: 'line',
-        source: this.sourceId,
-        paint: {
-          'line-color': '#409eff',
-          'line-width': 4
-        }
-      })
-      this.map.addLayer({
-        id: 'draw-point',
-        type: 'circle',
-        source: this.sourceId,
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#409eff',
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#ffffff'
-        }
-      })
-    } else if (type === 'polygon') {
-      this.map.addLayer({
-        id: 'draw-fill',
-        type: 'fill',
-        source: this.sourceId,
-        paint: {
-          'fill-color': '#409eff',
-          'fill-opacity': 0.3,
-          'fill-outline-color': '#409eff'
-        }
-      })
-      this.map.addLayer({
-        id: 'draw-line',
-        type: 'line',
-        source: this.sourceId,
-        paint: {
-          'line-color': '#409eff',
-          'line-width': 4
-        }
-      })
-      this.map.addLayer({
-        id: 'draw-point',
-        type: 'circle',
-        source: this.sourceId,
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#409eff',
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#ffffff'
-        }
-      })
-    }
-  }
 
   _updateSource(mouseCoords = null) {
     const allFeatures = [...this.features]
     
     if (this.currentType && this.drawingCoords.length > 0) {
+      let coords = [...this.drawingCoords]
+      if (mouseCoords) coords.push(mouseCoords)
+
+      coords.forEach(coord => {
+        allFeatures.push({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: coord },
+          properties: {}
+        })
+      })
+
       if (this.currentType === 'line') {
-        let coords = [...this.drawingCoords]
-        if (mouseCoords) coords.push(mouseCoords)
         if (coords.length >= 2) {
           allFeatures.push({
             type: 'Feature',
@@ -169,8 +148,13 @@ class DrawManager {
           })
         }
       } else if (this.currentType === 'polygon') {
-        let coords = [...this.drawingCoords]
-        if (mouseCoords) coords.push(mouseCoords)
+        if (coords.length >= 2) {
+          allFeatures.push({
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: coords },
+            properties: {}
+          })
+        }
         if (coords.length >= 3) {
           const closedCoords = [...coords, coords[0]]
           allFeatures.push({
@@ -214,11 +198,7 @@ class DrawManager {
   clearDrawings() {
     this.stopDraw()
     this.features = []
-    this._removeAllLayers()
-    
-    if (this.map.getSource(this.sourceId)) {
-      this.map.removeSource(this.sourceId)
-    }
+    this._updateSource()
   }
 
   removeDrawLayer() {

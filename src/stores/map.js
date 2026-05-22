@@ -1,10 +1,29 @@
 import { defineStore } from 'pinia'
 import { markRaw } from 'vue'
 
+const STORAGE_KEY = 'gis-sum-map-type'
+
+function getSavedMapType() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    return saved || 'openlayer'
+  } catch {
+    return 'openlayer'
+  }
+}
+
+function saveMapType(type) {
+  try {
+    localStorage.setItem(STORAGE_KEY, type)
+  } catch {
+    // ignore
+  }
+}
+
 export const useMapStore = defineStore('map', {
   state: () => ({
     // 当前地图类型: 'openlayer' | 'mapbox' | 'gaode' | 'cesium'
-    currentMapType: 'openlayer',
+    currentMapType: getSavedMapType(),
     // 地图切换 key，用于强制刷新 router-view
     mapKey: 0,
     // 各地图实例缓存 (用 markRaw 避免响应式代理)
@@ -40,6 +59,7 @@ export const useMapStore = defineStore('map', {
         return
       }
       this.currentMapType = type
+      saveMapType(type)
       this.mapKey++
       console.log(`[MapStore] 切换地图类型为: ${type}, mapKey: ${this.mapKey}`)
     },
