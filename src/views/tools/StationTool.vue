@@ -241,7 +241,12 @@ function addStationMarkersGaode() {
     const marker = new AMap.Marker({
       position: [station.lng, station.lat],
       title: station.name,
-      extData: station
+      extData: station,
+      icon: new AMap.Icon({
+        image: '/marker.svg',
+        size: new AMap.Size(32, 32),
+        imageSize: new AMap.Size(32, 32)
+      })
     })
     
     marker.on('click', () => {
