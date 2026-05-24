@@ -32,3 +32,27 @@ $tablet-breakpoint: 1024px;
     display: none;
   }
 }
+
+@mixin custom-scrollbar($thumb-color: rgb(0 212 255 / 40%), $thumb-hover-color: rgb(0 212 255 / 60%), $track-color: rgb(0 0 0 / 15%), $size: 6px) {
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: $size / 2;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $size / 2;
+
+    &:hover {
+      background: $thumb-hover-color;
+    }
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: $thumb-color $track-color;
+}

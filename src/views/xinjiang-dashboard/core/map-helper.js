@@ -15,10 +15,10 @@ export function createTownStyle(feature, resolution) {
 
   return new Style({
     fill: new Fill({
-      color: isHighlighted ? 'rgba(0, 212, 255, 0.3)' : 'rgba(0, 212, 255, 0.1)'
+      color: isHighlighted ? 'rgba(0, 212, 255, 0.2)' : 'rgba(0, 0, 0, 0)'
     }),
     stroke: new Stroke({
-      color: isHighlighted ? '#00d4ff' : 'rgba(0, 212, 255, 0.6)',
+      color: isHighlighted ? '#00d4ff' : 'rgba(0, 212, 255, 0.7)',
       width: isHighlighted ? 3 : 2
     }),
     text: new Text({

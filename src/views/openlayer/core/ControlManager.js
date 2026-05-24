@@ -10,16 +10,21 @@ class ControlManager {
   /**
    * 添加缩放控件
    * @param {Object} options 控件选项
+   * @param {Object} position 位置选项 { top, right, bottom, left }
    * @returns {ControlManager} 当前实例
    */
-  addZoomControl(options = {}) {
+  addZoomControl(options = {}, position = {}) {
     const control = new Zoom({
       ...options,
-      className: 'ol-zoom-top-right'
+      className: options.className || 'ol-zoom-custom'
     })
-    control.element.style.top = '20px'
-    control.element.style.right = '20px'
-    control.element.style.left = 'auto'
+    // 只有在没有 target 的情况下才设置位置样式
+    if (!options.target) {
+      if (position.top !== undefined) control.element.style.top = position.top
+      if (position.right !== undefined) control.element.style.right = position.right
+      if (position.bottom !== undefined) control.element.style.bottom = position.bottom
+      if (position.left !== undefined) control.element.style.left = position.left
+    }
     this.map.addControl(control)
     this.controls.set('zoom', control)
     return this
@@ -28,13 +33,18 @@ class ControlManager {
   /**
    * 添加全屏控件
    * @param {Object} options 控件选项
+   * @param {Object} position 位置选项 { top, right, bottom, left }
    * @returns {ControlManager} 当前实例
    */
-  addFullscreenControl(options = {}) {
+  addFullscreenControl(options = {}, position = {}) {
     const control = new FullScreen(options)
-    control.element.style.top = '80px'
-    control.element.style.right = '20px'
-    control.element.style.left = 'auto'
+    // 只有在没有 target 的情况下才设置位置样式
+    if (!options.target) {
+      if (position.top !== undefined) control.element.style.top = position.top
+      if (position.right !== undefined) control.element.style.right = position.right
+      if (position.bottom !== undefined) control.element.style.bottom = position.bottom
+      if (position.left !== undefined) control.element.style.left = position.left
+    }
     this.map.addControl(control)
     this.controls.set('fullscreen', control)
     return this
@@ -43,15 +53,21 @@ class ControlManager {
   /**
    * 添加比例尺控件
    * @param {Object} options 控件选项
+   * @param {Object} position 位置选项 { top, right, bottom, left }
    * @returns {ControlManager} 当前实例
    */
-  addScaleControl(options = {}) {
+  addScaleControl(options = {}, position = {}) {
     const control = new ScaleLine({
       units: options.units || 'metric',
       ...options
     })
-    control.element.style.bottom = '20px'
-    control.element.style.left = '20px'
+    // 只有在没有 target 的情况下才设置位置样式
+    if (!options.target) {
+      if (position.top !== undefined) control.element.style.top = position.top
+      if (position.right !== undefined) control.element.style.right = position.right
+      if (position.bottom !== undefined) control.element.style.bottom = position.bottom
+      if (position.left !== undefined) control.element.style.left = position.left
+    }
     this.map.addControl(control)
     this.controls.set('scale', control)
     return this
@@ -60,13 +76,18 @@ class ControlManager {
   /**
    * 添加底图切换控件
    * @param {Object} options 控件选项
+   * @param {Object} position 位置选项 { top, right, bottom, left }
    * @returns {ControlManager} 当前实例
    */
-  addBaseMapSwitcherControl(options = {}) {
+  addBaseMapSwitcherControl(options = {}, position = {}) {
     const control = new BaseMapSwitcherControl(options)
-    control.element.style.top = '110px'
-    control.element.style.right = '20px'
-    control.element.style.left = 'auto'
+    // 只有在没有 target 的情况下才设置位置样式
+    if (!options.target) {
+      if (position.top !== undefined) control.element.style.top = position.top
+      if (position.right !== undefined) control.element.style.right = position.right
+      if (position.bottom !== undefined) control.element.style.bottom = position.bottom
+      if (position.left !== undefined) control.element.style.left = position.left
+    }
     this.map.addControl(control)
     this.controls.set('baseMapSwitcher', control)
     return this

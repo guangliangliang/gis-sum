@@ -1,3 +1,23 @@
-.test {
-  color: red;
+* {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(0 0 0 / 15%);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgb(0 212 255 / 40%);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgb(0 212 255 / 60%);
+    }
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: rgb(0 212 255 / 40%) rgb(0 0 0 / 15%);
 }

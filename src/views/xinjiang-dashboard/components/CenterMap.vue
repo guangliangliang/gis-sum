@@ -1,9 +1,16 @@
 <template>
   <div class="center-map">
     <div ref="mapContainer" class="map-container"></div>
-    
+
+    <!-- 自定义控件容器 -->
+    <div ref="controlsContainer" class="map-controls-container"></div>
+
     <!-- 乡镇信息弹窗 -->
-    <div v-if="popupVisible" class="ol-popup" :style="{ left: popupPosition.x + 'px', top: popupPosition.y + 'px' }">
+    <div
+      v-if="popupVisible"
+      class="ol-popup"
+      :style="{ left: popupPosition.x + 'px', top: popupPosition.y + 'px' }"
+    >
       <div class="town-popup">
         <div class="popup-title">{{ popupTown.name }}</div>
         <div class="popup-item">
@@ -34,17 +41,20 @@ import { Style, Fill, Stroke, Text, Circle } from 'ol/style'
 import { Point } from 'ol/geom'
 import { Feature } from 'ol'
 import { fromLonLat } from 'ol/proj'
-import { townInfo, XINJIANG_CENTER, XINJIANG_ZOOM } from '@/views/xinjiang-dashboard/core/map-helper.js'
-import { 
-  schoolPoints, 
-  hospitalPoints, 
-  scenicPoints, 
+import {
+  townInfo,
+  XINJIANG_CENTER,
+  XINJIANG_ZOOM
+} from '@/views/xinjiang-dashboard/core/map-helper.js'
+import {
+  schoolPoints,
+  hospitalPoints,
+  scenicPoints,
   enterprisePoints,
   agriculturePoints,
   beautifulVillages
 } from '@/views/xinjiang-dashboard/core/mockData.js'
 import xinjiangGeoJSON from '@/assets/json/140825.json'
-
 
 const props = defineProps({
   activeMenu: {
@@ -54,6 +64,7 @@ const props = defineProps({
 })
 
 const mapContainer = ref(null)
+const controlsContainer = ref(null)
 const popupVisible = ref(false)
 const popupPosition = ref({ x: 0, y: 0 })
 const popupTown = ref({ name: '', population: 0, area: 0, gdp: 0 })
@@ -73,13 +84,13 @@ function formatNumber(num) {
 // 创建乡镇样式
 function createTownStyle(feature, resolution) {
   const isHighlighted = feature.get('highlighted')
-  
+
   return new Style({
     fill: new Fill({
-      color: isHighlighted ? 'rgba(0, 212, 255, 0.3)' : 'rgba(0, 212, 255, 0.1)'
+      color: isHighlighted ? 'rgba(0, 212, 255, 0.2)' : 'rgba(0, 0, 0, 0)'
     }),
     stroke: new Stroke({
-      color: isHighlighted ? '#00d4ff' : 'rgba(0, 212, 255, 0.6)',
+      color: isHighlighted ? '#00d4ff' : 'rgba(0, 212, 255, 0.7)',
       width: isHighlighted ? 3 : 2
     }),
     text: new Text({
@@ -107,11 +118,12 @@ async function initMap() {
 
     await mapInstance.init()
 
-    // 添加控件
-    mapInstance.getControlManager()
-      .addZoomControl()
-      .addFullscreenControl()
-      .addScaleControl()
+    // 添加控件，缩放、全屏、底图切换放到自定义容器，比例尺单独定义位置
+    const controlManager = mapInstance.getControlManager()
+    controlManager.addZoomControl({ target: controlsContainer.value })
+    controlManager.addFullscreenControl({ target: controlsContainer.value })
+    controlManager.addBaseMapSwitcherControl({ target: controlsContainer.value })
+    controlManager.addScaleControl({}, { bottom: '20px', left: '380px' })
 
     // 添加乡镇边界图层
     addTownLayer()
@@ -182,9 +194,9 @@ function createPointLayer(points, color) {
 // 更新地图图层
 function updateMapLayers(menu) {
   const olMap = mapInstance.getMap()
-  
+
   // 移除当前图层
-  currentLayers.forEach(layer => {
+  currentLayers.forEach((layer) => {
     olMap.removeLayer(layer)
   })
   currentLayers = []
@@ -264,7 +276,7 @@ function bindMapEvents() {
     if (feature && feature.get('name')) {
       const townName = feature.get('name')
       const townData = townInfo[townName] || { population: 0, area: 0, gdp: 0 }
-      
+
       popupTown.value = {
         name: townName,
         ...townData
@@ -288,11 +300,14 @@ function closePopup() {
 }
 
 // 监听菜单变化
-watch(() => props.activeMenu, (newMenu) => {
-  if (mapInstance) {
-    updateMapLayers(newMenu)
+watch(
+  () => props.activeMenu,
+  (newMenu) => {
+    if (mapInstance) {
+      updateMapLayers(newMenu)
+    }
   }
-})
+)
 
 onMounted(() => {
   initMap()
@@ -312,12 +327,29 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/views/xinjiang-dashboard/styles/dashboard.scss';
+@import url('@/views/xinjiang-dashboard/styles/dashboard.scss');
 
 .map-container {
-  width: 100%;
   height: 100%;
   position: relative;
+  width: 100%;
+}
+
+/* 自定义控件容器样式 */
+.map-controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: absolute;
+  right: 380px;
+  top: 20px;
+  z-index: 100;
+}
+
+/* 让控件在容器内正确显示 */
+:deep(.ol-control) {
+  inset: auto !important;
+  position: relative !important;
 }
 
 .ol-popup {
@@ -326,18 +358,18 @@ onUnmounted(() => {
 }
 
 .popup-close {
-  position: absolute;
-  top: 5px;
-  right: 10px;
   background: none;
   border: none;
   color: #00d4ff;
-  font-size: 20px;
   cursor: pointer;
-  padding: 0;
-  width: 24px;
+  font-size: 20px;
   height: 24px;
   line-height: 24px;
+  padding: 0;
+  position: absolute;
+  right: 10px;
   text-align: center;
+  top: 5px;
+  width: 24px;
 }
 </style>
