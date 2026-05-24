@@ -3,6 +3,13 @@
     <div class="header-decoration"></div>
     
     <div class="header-content">
+      <!-- 左侧返回按钮 -->
+      <div class="header-side">
+        <button class="menu-btn" @click="goBack">
+          ← 返回地图
+        </button>
+      </div>
+
       <!-- 中间标题 -->
       <div class="header-title">
         <h1>新绛县数字孪生一张图</h1>
@@ -19,6 +26,13 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function goBack() {
+  router.push('/cluster')
+}
 
 // 当前时间
 const currentTime = ref('')

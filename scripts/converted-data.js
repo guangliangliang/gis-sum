@@ -1,41 +1,7 @@
-// 新绛县模拟数据
-export const townNames = [
-  '古交镇',
-  '龙兴镇',
-  '阳王镇',
-  '泽掌镇',
-  '三泉镇',
-  '泉掌镇',
-  '横桥镇',
-  '万安镇',
-  '北张镇'
-]
 
-// 乡镇基础数据
-export const townData = [
-  { name: '古交镇', population: 35000, area: 57.2, gdp: 12.5, lng: 111.143434, lat: 35.615750, address: '上院泽古线古交镇政府古交镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/ee85665e7efa1e52813f59f84bd2a3ee'] },
-  { name: '龙兴镇', population: 85000, area: 72.5, gdp: 45.8, lng: 111.211985, lat: 35.612765, address: '新北建街与站北路交叉口西南60米', tel: '-', openTime: '周一至周五 09:00-17:00', photos: [] },
-  { name: '阳王镇', population: 28000, area: 65.8, gdp: 8.6, lng: 111.118976, lat: 35.506770, address: '原阳王中心校', tel: '0359-7822403', openTime: '-', photos: [] },
-  { name: '泽掌镇', population: 32000, area: 78.3, gdp: 15.2, lng: 111.162467, lat: 35.719596, address: '泽古线泽掌镇政府泽掌镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/d14ce60bf422ae29f285c8036a866d97'] },
-  { name: '三泉镇', population: 42000, area: 85.6, gdp: 22.3, lng: 111.165988, lat: 35.676809, address: '三泉镇政府三泉镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/c34773d25d6b8d228b2414fc80459c0d'] },
-  { name: '泉掌镇', population: 25000, area: 45.2, gdp: 7.8, lng: 111.110989, lat: 35.661744, address: '泉掌镇', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/2bad6cfee798361c9f2b4daffd764e12'] },
-  { name: '横桥镇', population: 38000, area: 92.5, gdp: 18.5, lng: 111.230622, lat: 35.574739, address: '南马新北线横桥镇政府', tel: '-', openTime: '-', photos: ['http://store.is.autonavi.com/showpic/486334b4b3c28a0231f7a98bd1062dfa'] },
-  { name: '万安镇', population: 30000, area: 62.3, gdp: 10.2, lng: 111.131800, lat: 35.539670, address: '万安镇新闻路', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/8b4ee5d266d4788ac5b70d1786347480'] },
-  { name: '北张镇', population: 27000, area: 58.7, gdp: 9.5, lng: 111.112381, lat: 35.703976, address: '泽古线', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/e8069e283d7888546be335bc3408dbb0'] }
-]
+// Converted school and hospital data
+// Generated: 2026-05-24T08:35:10.192Z
 
-// 新绛县总体数据
-export const countyOverview = {
-  name: '新绛县',
-  totalPopulation: 342000,
-  totalArea: 598.1,
-  gdp: 150.4,
-  gdpGrowth: 6.8,
-  adminTowns: 9,
-  adminVillages: 220
-}
-
-// 学校点位数据
 export const schoolPoints = [
   {
     "name": "新纺学校",
@@ -677,7 +643,7 @@ export const schoolPoints = [
     ]
   }
 ]
-// 医院点位数据
+
 export const hospitalPoints = [
   {
     "name": "新绛县人民医院",
@@ -936,77 +902,3 @@ export const hospitalPoints = [
     ]
   }
 ]
-// 旅游景点数据
-export const scenicPoints = [
-  { lng: 111.20, lat: 35.62, name: '绛州大堂', level: '4A' },
-  { lng: 111.19, lat: 35.61, name: '龙兴寺', level: '3A' },
-  { lng: 111.21, lat: 35.60, name: '钟楼', level: '2A' },
-  { lng: 111.18, lat: 35.63, name: '鼓乐广场', level: '3A' },
-  { lng: 111.16, lat: 35.58, name: '光村遗址', level: '4A' },
-  { lng: 111.22, lat: 35.59, name: '福胜寺', level: '3A' }
-]
-
-// 企业数据
-export const enterprisePoints = [
-  { lng: 111.25, lat: 35.61, name: '新绛煤化园区', type: 'industry' },
-  { lng: 111.24, lat: 35.63, name: '化工产业园', type: 'industry' },
-  { lng: 111.19, lat: 35.59, name: '农产品加工园', type: 'agriculture' },
-  { lng: 111.23, lat: 35.62, name: '装备制造园', type: 'industry' },
-  { lng: 111.17, lat: 35.62, name: '建材产业园', type: 'industry' }
-]
-
-// 农业示范基地
-export const agriculturePoints = [
-  { lng: 111.18, lat: 35.59, name: '蔬菜种植基地', type: 'vegetable' },
-  { lng: 111.20, lat: 35.58, name: '果树种植园', type: 'fruit' },
-  { lng: 111.16, lat: 35.61, name: '养殖示范区', type: 'livestock' },
-  { lng: 111.22, lat: 35.60, name: '中药材种植园', type: 'herb' },
-  { lng: 111.19, lat: 35.64, name: '粮食高产田', type: 'grain' }
-]
-
-// 美丽乡村示范村
-export const beautifulVillages = [
-  { lng: 111.17, lat: 35.60, name: '光村' },
-  { lng: 111.21, lat: 35.59, name: '西庄村' },
-  { lng: 111.19, lat: 35.64, name: '北张村' },
-  { lng: 111.23, lat: 35.61, name: '桥东村' },
-  { lng: 111.15, lat: 35.62, name: '泉掌村' }
-]
-
-// 经济数据
-export const economicData = {
-  years: [2019, 2020, 2021, 2022, 2023, 2024],
-  gdp: [105.2, 112.5, 120.8, 130.2, 141.5, 150.4],
-  industry: {
-    primary: [18.5, 19.2, 20.5, 21.8, 23.2, 24.5],
-    secondary: [52.6, 56.3, 60.4, 65.1, 70.8, 75.2],
-    tertiary: [34.1, 37.0, 39.9, 43.3, 47.5, 50.7]
-  }
-}
-
-// 旅游数据
-export const tourismData = {
-  years: [2019, 2020, 2021, 2022, 2023, 2024],
-  visitors: [420, 180, 260, 350, 480, 520],
-  revenue: [28, 12, 18, 25, 35, 38]
-}
-
-// 民生数据
-export const livelihoodData = {
-  schools: {
-    high: 5,
-    middle: 18,
-    primary: 45,
-    kindergarten: 62
-  },
-  hospitals: {
-    level2: 2,
-    level1: 15,
-    clinics: 186
-  },
-  socialSecurity: {
-    endowment: 185000,
-    medical: 320000,
-    unemployment: 45000
-  }
-}

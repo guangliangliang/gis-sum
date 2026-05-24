@@ -36,14 +36,14 @@ const mobile = computed(() => appStore.getMobile)
 const menuOptions = [
   { path: '/cluster', name: '点聚合', icon: '🎯' },
   { path: '/draw', name: '绘制点线面', icon: '✏️' },
-  { path: '/station', name: '站点查询', icon: '📍' }
+  { path: '/station', name: '站点查询', icon: '📍' },
+  { path: '/dashboard', name: '数字孪生一张图', icon: '📊' }
 ]
 
 // 菜单点击
 function handleMenuClick(item) {
-  // 清除地图内容
+  if (item.path === '/dashboard') return
   clearMapContent()
-  // 移动端点击菜单后自动折叠
   if (mobile.value) {
     appStore.setCollapse(true)
   }

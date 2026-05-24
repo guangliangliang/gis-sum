@@ -12,7 +12,7 @@ class MapSwitcherControl extends Control {
 
     super({
       element,
-      target: options.target,
+      target: options.target
     })
 
     this.mapStore = options.mapStore

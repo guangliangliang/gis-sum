@@ -203,7 +203,7 @@ $danger-color: #f56c6c;
   padding: 8px;
   position: absolute;
   top: 10px;
-  width: 360px;
+  width: 400px;
   z-index: 100;
 
   &.left-panel {
@@ -440,8 +440,10 @@ $danger-color: #f56c6c;
   background: rgb(10 22 40 / 95%);
   border: 1px solid $border-color;
   border-radius: 6px;
-  min-width: 180px;
+  max-width: 400px;
+  min-width: 280px;
   padding: 12px;
+  width: 320px;
 
   .popup-title {
     border-bottom: 1px solid rgb(0 212 255 / 20%);

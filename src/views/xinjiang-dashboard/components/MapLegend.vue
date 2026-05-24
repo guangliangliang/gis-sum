@@ -22,11 +22,11 @@ defineProps({
 <style scoped lang="scss">
 .map-legend {
   backdrop-filter: blur(10px);
-  background: linear-gradient(135deg, rgba(13, 30, 53, 0.92) 0%, rgba(16, 39, 68, 0.88) 100%);
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  background: linear-gradient(135deg, rgb(13 30 53 / 92%) 0%, rgb(16 39 68 / 88%) 100%);
+  border: 1px solid rgb(0 212 255 / 30%);
   border-radius: 6px;
-  bottom: 30px;
-  left: 380px;
+  bottom: 50px;
+  left: 420px;
   min-width: 100px;
   padding: 10px 14px;
   position: absolute;
@@ -56,7 +56,7 @@ defineProps({
   }
 
   .legend-title {
-    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    border-bottom: 1px solid rgb(0 212 255 / 20%);
     color: #00d4ff;
     font-size: 13px;
     font-weight: 600;

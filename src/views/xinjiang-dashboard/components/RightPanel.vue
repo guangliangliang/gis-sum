@@ -93,8 +93,11 @@ const hospitalList = hospitalPoints
 
 const schoolTypeMap = {
   high: '高中',
-  middle: '初中',
-  primary: '小学'
+  middle: '中学',
+  primary: '小学',
+  vocational: '职业学校',
+  kindergarten: '幼儿园',
+  school: '学校'
 }
 
 const tourismChartRef = ref(null)

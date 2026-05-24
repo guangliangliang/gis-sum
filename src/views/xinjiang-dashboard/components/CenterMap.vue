@@ -8,6 +8,27 @@
     <!-- 信息弹窗 (ol/Overlay) -->
     <div ref="popupEl" class="ol-popup" v-show="popupVisible">
       <div class="town-popup">
+        <!-- 图片轮播区 -->
+        <div v-if="popupSlides.length > 0" class="popup-photos">
+          <OSwiper
+            :slides="popupSlides"
+            :swiper-options="{ autoplay: false }"
+            :show-pagination="true"
+            :show-navigation="false"
+          >
+            <template #default="{ item }">
+              <el-image
+                :src="item.img"
+                :preview-src-list="popupPhotosList"
+                :initial-index="getPhotoIndex(item.img)"
+                fit="cover"
+                class="popup-photo-img"
+                preview-teleported
+              />
+            </template>
+          </OSwiper>
+        </div>
+
         <div class="popup-title">{{ popupData.title }}</div>
         <div class="popup-item" v-for="item in popupData.items" :key="item.label">
           <span class="popup-label">{{ item.label }}</span>
@@ -20,7 +41,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import OpenlayerMap from '@/views/openlayer/core/OpenlayerMap'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
@@ -30,6 +51,8 @@ import { Point } from 'ol/geom'
 import { Feature } from 'ol'
 import { fromLonLat } from 'ol/proj'
 import Overlay from 'ol/Overlay'
+import { unByKey } from 'ol/Observable'
+import OSwiper from '@/components/Swiper/index.vue'
 import {
   townInfo,
   XINJIANG_CENTER,
@@ -56,13 +79,41 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['township-points-change', 'school-points-change', 'hospital-points-change'])
+const emit = defineEmits([
+  'township-points-change',
+  'school-points-change',
+  'hospital-points-change'
+])
 
 const mapContainer = ref(null)
 const controlsContainer = ref(null)
 const popupEl = ref(null)
 const popupVisible = ref(false)
-const popupData = ref({ title: '', items: [] })
+const popupData = ref({ title: '', items: [], photos: [] })
+
+// 计算属性：处理轮播图数据
+const popupSlides = computed(() => {
+  if (!popupData.value.photos || !Array.isArray(popupData.value.photos)) {
+    return []
+  }
+  return popupData.value.photos.map((url) => ({ img: url }))
+})
+
+// 计算属性：用于 Element Plus 图片预览的列表
+const popupPhotosList = computed(() => {
+  if (!popupData.value.photos || !Array.isArray(popupData.value.photos)) {
+    return []
+  }
+  return popupData.value.photos
+})
+
+// 方法：获取当前图片的索引
+const getPhotoIndex = (url) => {
+  if (!popupData.value.photos || !Array.isArray(popupData.value.photos)) {
+    return 0
+  }
+  return popupData.value.photos.indexOf(url)
+}
 
 let mapInstance = null
 let townLayer = null
@@ -85,15 +136,13 @@ function formatNumber(num) {
 
 // 创建乡镇样式
 function createTownStyle(feature, resolution) {
-  const isHighlighted = feature.get('highlighted')
-
   return new Style({
     fill: new Fill({
-      color: isHighlighted ? 'rgba(0, 212, 255, 0.2)' : 'rgba(0, 0, 0, 0)'
+      color: 'rgba(0, 0, 0, 0)'
     }),
     stroke: new Stroke({
-      color: isHighlighted ? '#00d4ff' : 'rgba(0, 212, 255, 0.7)',
-      width: isHighlighted ? 3 : 2
+      color: 'rgba(0, 212, 255, 0.7)',
+      width: 2
     }),
     text: new Text({
       text: feature.get('name') || '',
@@ -123,11 +172,11 @@ async function initMap() {
     const controlManager = mapInstance.getControlManager()
     controlManager.addZoomControl({ target: controlsContainer.value })
     controlManager.addFullscreenControl({ target: controlsContainer.value })
-    controlManager.addBaseMapSwitcherControl({ 
-      target: controlsContainer.value, 
-      baseMapManager: mapInstance.getBaseMapManager() 
+    controlManager.addBaseMapSwitcherControl({
+      target: controlsContainer.value,
+      baseMapManager: mapInstance.getBaseMapManager()
     })
-    controlManager.addScaleControl({}, { bottom: '20px', left: '380px' })
+    controlManager.addScaleControl({}, { bottom: '20px', left: '420px' })
 
     const olMap = mapInstance.getMap()
 
@@ -328,32 +377,79 @@ function buildPopupData(feature) {
   const name = feature.get('name')
 
   if (pointType === 'township') {
+    const items = [
+      { label: '人口', value: formatNumber(feature.get('population')) + '人' },
+      { label: '面积', value: feature.get('area') + 'km²' },
+      { label: 'GDP', value: feature.get('gdp') + '亿元' }
+    ]
+    if (feature.get('address') && feature.get('address') !== '-') {
+      items.push({ label: '地址', value: feature.get('address') })
+    }
+    if (feature.get('tel') && feature.get('tel') !== '-') {
+      items.push({ label: '电话', value: feature.get('tel') })
+    }
+    if (feature.get('openTime') && feature.get('openTime') !== '-') {
+      items.push({ label: '办公时间', value: feature.get('openTime') })
+    }
     return {
       title: name,
-      items: [
-        { label: '人口', value: formatNumber(feature.get('population')) + '人' },
-        { label: '面积', value: feature.get('area') + 'km²' },
-        { label: 'GDP', value: feature.get('gdp') + '亿元' }
-      ]
+      items,
+      photos: feature.get('photos') || []
     }
   }
 
   if (pointType === 'school') {
-    const typeMap = { high: '高中', middle: '初中', primary: '小学' }
+    const typeMap = {
+      high: '高中',
+      middle: '中学',
+      primary: '小学',
+      vocational: '职业学校',
+      kindergarten: '幼儿园',
+      school: '学校'
+    }
+    const items = [
+      { label: '类型', value: typeMap[feature.get('type')] || feature.get('type') || '-' }
+    ]
+
+    // 添加地址
+    if (feature.get('address') && feature.get('address') !== '-') {
+      items.push({ label: '地址', value: feature.get('address') })
+    }
+
+    // 添加电话
+    if (feature.get('tel') && feature.get('tel') !== '-') {
+      items.push({ label: '电话', value: feature.get('tel') })
+    }
+
     return {
       title: name,
-      items: [
-        { label: '类型', value: typeMap[feature.get('type')] || feature.get('type') || '-' }
-      ]
+      items,
+      photos: feature.get('photos') || []
     }
   }
 
   if (pointType === 'hospital') {
+    const items = [{ label: '类型', value: feature.get('level') || '医疗机构' }]
+
+    // 添加地址
+    if (feature.get('address') && feature.get('address') !== '-') {
+      items.push({ label: '地址', value: feature.get('address') })
+    }
+
+    // 添加电话
+    if (feature.get('tel') && feature.get('tel') !== '-') {
+      items.push({ label: '电话', value: feature.get('tel') })
+    }
+
+    // 添加营业时间
+    if (feature.get('openTime') && feature.get('openTime') !== '-') {
+      items.push({ label: '时间', value: feature.get('openTime') })
+    }
+
     return {
       title: name,
-      items: [
-        { label: '等级', value: feature.get('level') || '-' }
-      ]
+      items,
+      photos: feature.get('photos') || []
     }
   }
 
@@ -362,7 +458,10 @@ function buildPopupData(feature) {
 
 function findLayerAndFeature(name, layer) {
   if (!layer) return null
-  return layer.getSource().getFeatures().find(f => f.get('name') === name)
+  return layer
+    .getSource()
+    .getFeatures()
+    .find((f) => f.get('name') === name)
 }
 
 function flyToTown(townName) {
@@ -380,7 +479,7 @@ function flyToHospital(hospitalName) {
 function flyToPoint(name, dataList, layer) {
   if (!mapInstance) return
 
-  const item = dataList.find(d => d.name === name)
+  const item = dataList.find((d) => d.name === name)
   if (!item) return
 
   const olMap = mapInstance.getMap()
@@ -393,7 +492,8 @@ function flyToPoint(name, dataList, layer) {
   })
 
   if (layer) {
-    const layerVisible = (layer === townshipPointLayer && townshipPointsVisible) ||
+    const layerVisible =
+      (layer === townshipPointLayer && townshipPointsVisible) ||
       (layer === schoolPointLayer && schoolPointsVisible) ||
       (layer === hospitalPointLayer && hospitalPointsVisible)
 
@@ -474,43 +574,15 @@ function updateMapLayers(menu) {
 function bindMapEvents() {
   const olMap = mapInstance.getMap()
 
-  // 鼠标移动事件
-  moveHandler = olMap.on('pointermove', (evt) => {
-    const pixel = olMap.getEventPixel(evt.originalEvent)
-    const feature = olMap.forEachFeatureAtPixel(pixel, (f) => f)
-
-    // 清除之前的高亮
-    if (highlightFeature) {
-      highlightFeature.set('highlighted', false)
-      highlightFeature = null
-    }
-
-    // 高亮当前乡镇
-    if (feature && feature.get('name')) {
-      feature.set('highlighted', true)
-      highlightFeature = feature
-    }
-  })
-
   clickHandler = olMap.on('click', (evt) => {
     const feature = olMap.forEachFeatureAtPixel(evt.pixel, (f) => f)
 
     if (feature && feature.get('name')) {
       const pointType = feature.get('pointType')
 
+      // 只有点要素显示弹窗，面要素不显示
       if (pointType) {
         showPopupAt(evt.coordinate, buildPopupData(feature))
-      } else {
-        const townName = feature.get('name')
-        const townDataItem = townInfo[townName] || { population: 0, area: 0, gdp: 0 }
-        showPopupAt(evt.coordinate, {
-          title: townName,
-          items: [
-            { label: '人口', value: formatNumber(townDataItem.population) + '人' },
-            { label: '面积', value: townDataItem.area + 'km²' },
-            { label: 'GDP', value: townDataItem.gdp + '亿元' }
-          ]
-        })
       }
     } else {
       closePopup()
@@ -540,15 +612,18 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (clickHandler) unByKey(clickHandler)
+  if (moveHandler) unByKey(moveHandler)
+  closePopup()
   if (mapInstance) {
-    const olMap = mapInstance.getMap()
-    if (olMap) {
-      if (clickHandler) olMap.un(clickHandler)
-      if (moveHandler) olMap.un(moveHandler)
-    }
     mapInstance.destroy()
     mapInstance = null
   }
+  townLayer = null
+  currentLayers = []
+  townshipPointLayer = null
+  schoolPointLayer = null
+  hospitalPointLayer = null
 })
 
 defineExpose({
@@ -576,15 +651,13 @@ defineExpose({
   flex-direction: column;
   gap: 12px;
   position: absolute;
-  right: 380px;
+  right: 420px;
   top: 20px;
   z-index: 100;
-}
 
-/* 让控件在容器内正确显示 */
-:deep(.ol-control) {
-  inset: auto !important;
-  position: relative !important;
+  :deep(.ol-control) {
+    position: unset;
+  }
 }
 
 .ol-popup {
@@ -606,5 +679,35 @@ defineExpose({
   text-align: center;
   top: 5px;
   width: 24px;
+  z-index: 10;
+}
+
+.popup-photos {
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+
+  :deep(.base-swiper) {
+    height: 160px;
+
+    .swiper-slide {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+.popup-photo-img {
+  border-radius: 4px;
+  cursor: pointer;
+  max-height: 160px;
+  max-width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 }
 </style>

@@ -74,15 +74,15 @@
           />
           <el-table-column
             prop="area"
-            label="面积"
-            width="60"
+            label="面积(km²)"
+            width="90"
             align="center"
             :formatter="formatArea"
           />
           <el-table-column
             prop="gdp"
             label="GDP"
-            width="60"
+            width="70"
             align="center"
             :formatter="formatGdp"
           />
@@ -144,7 +144,7 @@ function formatPopulation(row) {
 }
 
 function formatArea(row) {
-  return `${row.area}km²`
+  return `${row.area}`
 }
 
 function formatGdp(row) {
@@ -319,6 +319,7 @@ window.addEventListener('resize', () => {
     .header-toggle-btn {
       margin-left: auto;
     }
+
     .card-content {
       overflow: hidden;
       padding: 0;
