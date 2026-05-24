@@ -6,7 +6,12 @@
     <div ref="controlsContainer" class="map-controls-container"></div>
 
     <!-- 信息弹窗 (ol/Overlay) -->
-    <div ref="popupEl" class="ol-popup" v-show="popupVisible">
+    <div ref="popupEl" class="ol-popup" v-show="popupVisible" :style="{
+      '--theme-primary': themeColors.primary,
+      '--theme-primary-transparent': themeColors.primaryTransparent,
+      '--theme-primary-light': themeColors.primaryLight,
+      '--theme-primary-dark': themeColors.primaryDark
+    }">
       <div class="town-popup">
         <!-- 图片轮播区 -->
         <div v-if="popupSlides.length > 0" class="popup-photos">
@@ -15,6 +20,7 @@
             :swiper-options="{ autoplay: false }"
             :show-pagination="true"
             :show-navigation="false"
+            @slide-change="handleSlideChange"
           >
             <template #default="{ item }">
               <el-image
@@ -41,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue'
 import OpenlayerMap from '@/views/openlayer/core/OpenlayerMap'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
@@ -90,6 +96,107 @@ const controlsContainer = ref(null)
 const popupEl = ref(null)
 const popupVisible = ref(false)
 const popupData = ref({ title: '', items: [], photos: [] })
+
+// 动态主题配色
+const themeColors = reactive({
+  primary: '#00d4ff',
+  primaryTransparent: 'rgba(0, 212, 255, 0.3)',
+  primaryLight: 'rgba(0, 212, 255, 0.1)',
+  primaryDark: 'rgba(0, 212, 255, 0.5)'
+})
+
+// 提取图片主色调
+function extractDominantColor(imgSrc) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      canvas.width = 50
+      canvas.height = 50
+      ctx.drawImage(img, 0, 0, 50, 50)
+      
+      const imageData = ctx.getImageData(0, 0, 50, 50)
+      const data = imageData.data
+      let r = 0, g = 0, b = 0, count = 0
+      
+      // 跳过太暗或太亮的像素
+      for (let i = 0; i < data.length; i += 4) {
+        const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3
+        if (brightness > 30 && brightness < 230) {
+          r += data[i]
+          g += data[i + 1]
+          b += data[i + 2]
+          count++
+        }
+      }
+      
+      if (count > 0) {
+        r = Math.round(r / count)
+        g = Math.round(g / count)
+        b = Math.round(b / count)
+        
+        // 增强色彩饱和度
+        const max = Math.max(r, g, b)
+        const min = Math.min(r, g, b)
+        const saturation = max > 0 ? (max - min) / max : 0
+        
+        if (saturation < 0.2) {
+          // 如果饱和度太低，使用默认的科技蓝
+          resolve('#00d4ff')
+        } else {
+          resolve(`rgb(${r}, ${g}, ${b})`)
+        }
+      } else {
+        resolve('#00d4ff')
+      }
+    }
+    img.onerror = () => {
+      resolve('#00d4ff')
+    }
+    img.src = imgSrc
+  })
+}
+
+// 更新主题颜色
+function updateThemeColors(color) {
+  // 将 rgb 转换为 rgba
+  const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
+  if (rgbMatch) {
+    const [, r, g, b] = rgbMatch
+    themeColors.primary = color
+    themeColors.primaryTransparent = `rgba(${r}, ${g}, ${b}, 0.3)`
+    themeColors.primaryLight = `rgba(${r}, ${g}, ${b}, 0.1)`
+    themeColors.primaryDark = `rgba(${r}, ${g}, ${b}, 0.5)`
+  } else {
+    // 如果是 hex 颜色
+    themeColors.primary = color
+    themeColors.primaryTransparent = 'rgba(0, 212, 255, 0.3)'
+    themeColors.primaryLight = 'rgba(0, 212, 255, 0.1)'
+    themeColors.primaryDark = 'rgba(0, 212, 255, 0.5)'
+  }
+  
+  // 更新 CSS 变量
+  if (popupEl.value) {
+    popupEl.value.style.setProperty('--theme-primary', themeColors.primary)
+    popupEl.value.style.setProperty('--theme-primary-transparent', themeColors.primaryTransparent)
+    popupEl.value.style.setProperty('--theme-primary-light', themeColors.primaryLight)
+    popupEl.value.style.setProperty('--theme-primary-dark', themeColors.primaryDark)
+  }
+}
+
+// 当前轮播图索引
+let currentSlideIndex = 0
+
+// 处理轮播图变化
+async function handleSlideChange(index) {
+  currentSlideIndex = index
+  if (popupData.value.photos && popupData.value.photos[index]) {
+    const color = await extractDominantColor(popupData.value.photos[index])
+    updateThemeColors(color)
+  }
+}
 
 // 计算属性：处理轮播图数据
 const popupSlides = computed(() => {
@@ -509,10 +616,20 @@ function flyToPoint(name, dataList, layer) {
   }
 }
 
-function showPopupAt(coordinate, data) {
+async function showPopupAt(coordinate, data) {
   popupData.value = data
   popupOverlay.setPosition(coordinate)
   popupVisible.value = true
+  
+  // 重置主题色为默认
+  updateThemeColors('#00d4ff')
+  currentSlideIndex = 0
+  
+  // 根据第一张图片设置主题色
+  if (data.photos && data.photos.length > 0) {
+    const color = await extractDominantColor(data.photos[0])
+    updateThemeColors(color)
+  }
 }
 
 // 更新地图图层
@@ -660,15 +777,160 @@ defineExpose({
   }
 }
 
+/* ========== 一张图地图控件样式 - 科技蓝主题 ========== */
+
+/* 缩放控件 */
+:deep(.ol-zoom-custom),
+:deep(.ol-zoom) {
+  background: rgba(10, 22, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 6px !important;
+  padding: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+:deep(.ol-zoom-custom button),
+:deep(.ol-zoom button) {
+  background: transparent !important;
+  color: #00d4ff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  margin: 2px 0 !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 18px !important;
+  line-height: 32px !important;
+  padding: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+:deep(.ol-zoom-custom button:hover),
+:deep(.ol-zoom button:hover) {
+  background: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) !important;
+}
+
+:deep(.ol-zoom-custom button:disabled),
+:deep(.ol-zoom button:disabled) {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* 全屏控件 */
+:deep(.ol-full-screen) {
+  background: rgba(10, 22, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 6px !important;
+  padding: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+:deep(.ol-full-screen button) {
+  background: transparent !important;
+  color: #00d4ff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+  line-height: 32px !important;
+  padding: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+:deep(.ol-full-screen button:hover) {
+  background: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) !important;
+}
+
+/* 比例尺控件 */
+:deep(.ol-scale-line) {
+  background: rgba(10, 22, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 4px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+:deep(.ol-scale-line-inner) {
+  border-color: #00d4ff !important;
+  color: #00d4ff !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* 底图切换控件 */
+:deep(.ol-base-map-switcher) {
+  background: rgba(10, 22, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 6px !important;
+  padding: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+:deep(.ol-base-map-switcher > button) {
+  background: transparent !important;
+  color: #00d4ff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 18px !important;
+  line-height: 32px !important;
+  padding: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+:deep(.ol-base-map-switcher > button:hover) {
+  background: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) !important;
+}
+
+/* 底图切换菜单 */
+:deep(.image-change-config-menu) {
+  background: rgba(10, 22, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  top: 150px !important;
+}
+
+:deep(.image-change-config-menu .single-image) {
+  border-color: rgba(0, 212, 255, 0.3) !important;
+}
+
+:deep(.image-change-config-menu .single-image.current-image) {
+  border-color: #00d4ff !important;
+}
+
+:deep(.image-change-config-menu .label-span) {
+  background: rgba(0, 212, 255, 0.1) !important;
+  color: #00d4ff !important;
+}
+
+:deep(.image-change-config-menu .single-image.current-image .label-span) {
+  background: #00d4ff !important;
+  color: #ffffff !important;
+}
+
+/* 弹窗样式 */
 .ol-popup {
   pointer-events: auto;
   z-index: 1000;
+
+  --theme-primary: #00d4ff;
+  --theme-primary-transparent: rgba(0, 212, 255, 0.3);
+  --theme-primary-light: rgba(0, 212, 255, 0.1);
+  --theme-primary-dark: rgba(0, 212, 255, 0.5);
 }
 
 .popup-close {
   background: none;
   border: none;
-  color: #00d4ff;
+  color: var(--theme-primary);
   cursor: pointer;
   font-size: 20px;
   height: 24px;
@@ -708,6 +970,41 @@ defineExpose({
 
   &:hover {
     transform: scale(1.02);
+  }
+}
+
+/* 覆盖全局的弹窗样式，使用动态主题色 */
+:deep(.town-popup) {
+  background: rgb(10 22 40 / 95%);
+  border: 1px solid var(--theme-primary-transparent);
+  border-radius: 6px;
+  max-width: 400px;
+  min-width: 280px;
+  padding: 12px;
+  width: 320px;
+
+  .popup-title {
+    border-bottom: 1px solid var(--theme-primary-light);
+    color: var(--theme-primary);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
+
+  .popup-item {
+    display: flex;
+    font-size: 12px;
+    justify-content: space-between;
+    padding: 4px 0;
+
+    .popup-label {
+      color: #9ba7b8;
+    }
+
+    .popup-value {
+      color: #e0e6ed;
+    }
   }
 }
 </style>

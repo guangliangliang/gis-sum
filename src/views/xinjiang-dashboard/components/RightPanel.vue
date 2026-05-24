@@ -70,7 +70,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as echarts from 'echarts'
-import { schoolPoints, hospitalPoints, tourismData } from '@/views/xinjiang-dashboard/core/mockData.js'
+import {
+  schoolPoints,
+  hospitalPoints,
+  tourismData
+} from '@/views/xinjiang-dashboard/core/mockData.js'
 import ToggleIconButton from '@/components/ToggleIconButton/index.vue'
 import schoolIcon from '@/assets/images/map/point/school.png'
 import hospitalIcon from '@/assets/images/map/point/hospital.png'
@@ -86,7 +90,12 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['toggle-school-points', 'toggle-hospital-points', 'school-row-click', 'hospital-row-click'])
+const emit = defineEmits([
+  'toggle-school-points',
+  'toggle-hospital-points',
+  'school-row-click',
+  'hospital-row-click'
+])
 
 const schoolList = schoolPoints
 const hospitalList = hospitalPoints
@@ -119,10 +128,11 @@ function initTourismChart() {
       }
     },
     grid: {
-      left: '15%',
-      right: '10%',
-      top: '15%',
-      bottom: '15%'
+      left: '0%',
+      right: '0%',
+      top: '5%',
+      bottom: '5%',
+      containLabel: true
     },
     xAxis: {
       type: 'category',
@@ -236,7 +246,7 @@ window.addEventListener('resize', () => {
       }
 
       &::-webkit-scrollbar-thumb {
-        background: rgba(0, 212, 255, 0.3);
+        background: rgb(0 212 255 / 30%);
         border-radius: 2px;
       }
     }
@@ -249,7 +259,7 @@ window.addEventListener('resize', () => {
 
     .list-item {
       align-items: center;
-      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+      border-bottom: 1px solid rgb(0 212 255 / 8%);
       cursor: pointer;
       display: flex;
       justify-content: space-between;
@@ -257,8 +267,8 @@ window.addEventListener('resize', () => {
       transition: all 0.2s ease;
 
       &:hover {
-        background: rgba(0, 212, 255, 0.08);
-        border-bottom-color: rgba(0, 212, 255, 0.3);
+        background: rgb(0 212 255 / 8%);
+        border-bottom-color: rgb(0 212 255 / 30%);
       }
 
       .item-name {
@@ -267,8 +277,8 @@ window.addEventListener('resize', () => {
       }
 
       .item-tag {
-        background: rgba(0, 212, 255, 0.1);
-        border: 1px solid rgba(0, 212, 255, 0.25);
+        background: rgb(0 212 255 / 10%);
+        border: 1px solid rgb(0 212 255 / 25%);
         border-radius: 3px;
         color: #00d4ff;
         font-size: 11px;

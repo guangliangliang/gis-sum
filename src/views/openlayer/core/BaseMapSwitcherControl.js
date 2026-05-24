@@ -87,6 +87,7 @@ class BaseMapSwitcherControl extends Control {
         label.textContent = '地名'
         label.style.cssText = `
           font-size: 12px;
+          color: #00d4ff;
         `
 
         checkboxWrapper.appendChild(checkbox)
@@ -98,8 +99,8 @@ class BaseMapSwitcherControl extends Control {
       labelSpan.className = 'label-span'
       labelSpan.textContent = item.label
       labelSpan.style.cssText = `
-        background: ${item.label === this.currentImage ? '#409eff' : 'white'};
-        color: ${item.label === this.currentImage ? 'white' : '#606266'};
+        background: ${item.label === this.currentImage ? '#00d4ff' : 'rgba(0, 212, 255, 0.1)'};
+        color: ${item.label === this.currentImage ? 'white' : '#00d4ff'};
         text-align: center;
         padding: 2px 0;
         font-size: 12px;

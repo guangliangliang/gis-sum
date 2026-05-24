@@ -8,6 +8,31 @@ class BaseMapManager {
     this.map = map
     this.currentBaseMap = imageConfigs[0]
     this.labelVisible = true
+    this.listeners = []
+  }
+
+  /**
+   * 添加主题变化监听器
+   * @param {Function} listener - 监听器函数
+   */
+  addThemeChangeListener(listener) {
+    this.listeners.push(listener)
+  }
+
+  /**
+   * 移除主题变化监听器
+   * @param {Function} listener - 监听器函数
+   */
+  removeThemeChangeListener(listener) {
+    this.listeners = this.listeners.filter(l => l !== listener)
+  }
+
+  /**
+   * 通知主题变化
+   * @param {Object} theme - 主题配置
+   */
+  notifyThemeChange(theme) {
+    this.listeners.forEach(listener => listener(theme))
   }
 
   /**
@@ -51,6 +76,14 @@ class BaseMapManager {
     }
 
     this.currentBaseMap = this.findBaseMapByUrl(baseUrl)
+    // 通知主题变化
+    if (this.currentBaseMap) {
+      this.notifyThemeChange({
+        themeColor: this.currentBaseMap.themeColor,
+        themeTransparent: this.currentBaseMap.themeTransparent,
+        themeLight: this.currentBaseMap.themeLight
+      })
+    }
   }
 
   /**
