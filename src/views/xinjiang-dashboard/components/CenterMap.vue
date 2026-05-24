@@ -5,25 +5,13 @@
     <!-- 自定义控件容器 -->
     <div ref="controlsContainer" class="map-controls-container"></div>
 
-    <!-- 乡镇信息弹窗 -->
-    <div
-      v-if="popupVisible"
-      class="ol-popup"
-      :style="{ left: popupPosition.x + 'px', top: popupPosition.y + 'px' }"
-    >
+    <!-- 信息弹窗 (ol/Overlay) -->
+    <div ref="popupEl" class="ol-popup" v-show="popupVisible">
       <div class="town-popup">
-        <div class="popup-title">{{ popupTown.name }}</div>
-        <div class="popup-item">
-          <span class="popup-label">人口</span>
-          <span class="popup-value">{{ formatNumber(popupTown.population) }}人</span>
-        </div>
-        <div class="popup-item">
-          <span class="popup-label">面积</span>
-          <span class="popup-value">{{ popupTown.area }}km²</span>
-        </div>
-        <div class="popup-item">
-          <span class="popup-label">GDP</span>
-          <span class="popup-value">{{ popupTown.gdp }}亿元</span>
+        <div class="popup-title">{{ popupData.title }}</div>
+        <div class="popup-item" v-for="item in popupData.items" :key="item.label">
+          <span class="popup-label">{{ item.label }}</span>
+          <span class="popup-value">{{ item.value }}</span>
         </div>
       </div>
       <button class="popup-close" @click="closePopup">×</button>
@@ -37,16 +25,18 @@ import OpenlayerMap from '@/views/openlayer/core/OpenlayerMap'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
 import { GeoJSON } from 'ol/format'
-import { Style, Fill, Stroke, Text, Circle } from 'ol/style'
+import { Style, Fill, Stroke, Text, Circle, Icon } from 'ol/style'
 import { Point } from 'ol/geom'
 import { Feature } from 'ol'
 import { fromLonLat } from 'ol/proj'
+import Overlay from 'ol/Overlay'
 import {
   townInfo,
   XINJIANG_CENTER,
   XINJIANG_ZOOM
 } from '@/views/xinjiang-dashboard/core/map-helper.js'
 import {
+  townData,
   schoolPoints,
   hospitalPoints,
   scenicPoints,
@@ -55,6 +45,9 @@ import {
   beautifulVillages
 } from '@/views/xinjiang-dashboard/core/mockData.js'
 import xinjiangGeoJSON from '@/assets/json/140825.json'
+import townshipIconUrl from '@/assets/images/map/point/township.png'
+import schoolIconUrl from '@/assets/images/map/point/school.png'
+import hospitalIconUrl from '@/assets/images/map/point/hospital.png'
 
 const props = defineProps({
   activeMenu: {
@@ -63,15 +56,24 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['township-points-change', 'school-points-change', 'hospital-points-change'])
+
 const mapContainer = ref(null)
 const controlsContainer = ref(null)
+const popupEl = ref(null)
 const popupVisible = ref(false)
-const popupPosition = ref({ x: 0, y: 0 })
-const popupTown = ref({ name: '', population: 0, area: 0, gdp: 0 })
+const popupData = ref({ title: '', items: [] })
 
 let mapInstance = null
 let townLayer = null
 let currentLayers = []
+let townshipPointLayer = null
+let schoolPointLayer = null
+let hospitalPointLayer = null
+let townshipPointsVisible = false
+let schoolPointsVisible = false
+let hospitalPointsVisible = false
+let popupOverlay = null
 let highlightFeature = null
 let clickHandler = null
 let moveHandler = null
@@ -118,7 +120,6 @@ async function initMap() {
 
     await mapInstance.init()
 
-    // 添加控件，缩放、全屏、底图切换放到自定义容器，比例尺单独定义位置
     const controlManager = mapInstance.getControlManager()
     controlManager.addZoomControl({ target: controlsContainer.value })
     controlManager.addFullscreenControl({ target: controlsContainer.value })
@@ -128,10 +129,18 @@ async function initMap() {
     })
     controlManager.addScaleControl({}, { bottom: '20px', left: '380px' })
 
-    // 添加乡镇边界图层
-    addTownLayer()
+    const olMap = mapInstance.getMap()
 
-    // 绑定事件
+    popupOverlay = new Overlay({
+      element: popupEl.value,
+      autoPan: true,
+      autoPanAnimation: { duration: 250 },
+      offset: [0, -40],
+      positioning: 'bottom-center'
+    })
+    olMap.addOverlay(popupOverlay)
+
+    addTownLayer()
     bindMapEvents()
 
     console.log('新绛县地图初始化成功')
@@ -192,6 +201,218 @@ function createPointLayer(points, color) {
     style: style,
     zIndex: 20
   })
+}
+
+function addIconPointLayer(points, iconUrl, pointType, idPrefix) {
+  const features = points.map((point, index) => {
+    const feature = new Feature({
+      geometry: new Point(fromLonLat([point.lng, point.lat])),
+      name: point.name,
+      lng: point.lng,
+      lat: point.lat,
+      pointType,
+      ...point
+    })
+    feature.setId(idPrefix + '_' + index)
+    return feature
+  })
+
+  const source = new VectorSource({ features })
+
+  const style = new Style({
+    image: new Icon({
+      src: iconUrl,
+      scale: 0.6,
+      anchor: [0.5, 1],
+      anchorXUnits: 'fraction',
+      anchorYUnits: 'fraction'
+    })
+  })
+
+  return new VectorLayer({
+    source,
+    style,
+    zIndex: 25
+  })
+}
+
+function addTownshipPointLayer() {
+  if (townshipPointLayer) return
+
+  townshipPointLayer = addIconPointLayer(townData, townshipIconUrl, 'township', 'township')
+  const olMap = mapInstance.getMap()
+  olMap.addLayer(townshipPointLayer)
+  townshipPointsVisible = true
+  emit('township-points-change', true)
+}
+
+function removeTownshipPointLayer() {
+  if (!townshipPointLayer) return
+
+  const olMap = mapInstance.getMap()
+  olMap.removeLayer(townshipPointLayer)
+  townshipPointLayer = null
+  townshipPointsVisible = false
+  closePopup()
+  emit('township-points-change', false)
+}
+
+function addSchoolPointLayer() {
+  if (schoolPointLayer) return
+
+  schoolPointLayer = addIconPointLayer(schoolPoints, schoolIconUrl, 'school', 'school')
+  const olMap = mapInstance.getMap()
+  olMap.addLayer(schoolPointLayer)
+  schoolPointsVisible = true
+  emit('school-points-change', true)
+}
+
+function removeSchoolPointLayer() {
+  if (!schoolPointLayer) return
+
+  const olMap = mapInstance.getMap()
+  olMap.removeLayer(schoolPointLayer)
+  schoolPointLayer = null
+  schoolPointsVisible = false
+  closePopup()
+  emit('school-points-change', false)
+}
+
+function addHospitalPointLayer() {
+  if (hospitalPointLayer) return
+
+  hospitalPointLayer = addIconPointLayer(hospitalPoints, hospitalIconUrl, 'hospital', 'hospital')
+  const olMap = mapInstance.getMap()
+  olMap.addLayer(hospitalPointLayer)
+  hospitalPointsVisible = true
+  emit('hospital-points-change', true)
+}
+
+function removeHospitalPointLayer() {
+  if (!hospitalPointLayer) return
+
+  const olMap = mapInstance.getMap()
+  olMap.removeLayer(hospitalPointLayer)
+  hospitalPointLayer = null
+  hospitalPointsVisible = false
+  closePopup()
+  emit('hospital-points-change', false)
+}
+
+function toggleTownshipPoints() {
+  if (townshipPointsVisible) {
+    removeTownshipPointLayer()
+  } else {
+    addTownshipPointLayer()
+  }
+}
+
+function toggleSchoolPoints() {
+  if (schoolPointsVisible) {
+    removeSchoolPointLayer()
+  } else {
+    addSchoolPointLayer()
+  }
+}
+
+function toggleHospitalPoints() {
+  if (hospitalPointsVisible) {
+    removeHospitalPointLayer()
+  } else {
+    addHospitalPointLayer()
+  }
+}
+
+function buildPopupData(feature) {
+  const pointType = feature.get('pointType')
+  const name = feature.get('name')
+
+  if (pointType === 'township') {
+    return {
+      title: name,
+      items: [
+        { label: '人口', value: formatNumber(feature.get('population')) + '人' },
+        { label: '面积', value: feature.get('area') + 'km²' },
+        { label: 'GDP', value: feature.get('gdp') + '亿元' }
+      ]
+    }
+  }
+
+  if (pointType === 'school') {
+    const typeMap = { high: '高中', middle: '初中', primary: '小学' }
+    return {
+      title: name,
+      items: [
+        { label: '类型', value: typeMap[feature.get('type')] || feature.get('type') || '-' }
+      ]
+    }
+  }
+
+  if (pointType === 'hospital') {
+    return {
+      title: name,
+      items: [
+        { label: '等级', value: feature.get('level') || '-' }
+      ]
+    }
+  }
+
+  return { title: name, items: [] }
+}
+
+function findLayerAndFeature(name, layer) {
+  if (!layer) return null
+  return layer.getSource().getFeatures().find(f => f.get('name') === name)
+}
+
+function flyToTown(townName) {
+  flyToPoint(townName, townData, townshipPointLayer)
+}
+
+function flyToSchool(schoolName) {
+  flyToPoint(schoolName, schoolPoints, schoolPointLayer)
+}
+
+function flyToHospital(hospitalName) {
+  flyToPoint(hospitalName, hospitalPoints, hospitalPointLayer)
+}
+
+function flyToPoint(name, dataList, layer) {
+  if (!mapInstance) return
+
+  const item = dataList.find(d => d.name === name)
+  if (!item) return
+
+  const olMap = mapInstance.getMap()
+  const coordinate = fromLonLat([item.lng, item.lat])
+
+  olMap.getView().animate({
+    center: coordinate,
+    zoom: 14,
+    duration: 800
+  })
+
+  if (layer) {
+    const layerVisible = (layer === townshipPointLayer && townshipPointsVisible) ||
+      (layer === schoolPointLayer && schoolPointsVisible) ||
+      (layer === hospitalPointLayer && hospitalPointsVisible)
+
+    if (layerVisible) {
+      setTimeout(() => {
+        const feature = findLayerAndFeature(name, layer)
+        if (feature) {
+          const data = buildPopupData(feature)
+          showPopupAt(feature.getGeometry().getCoordinates(), data)
+        }
+      }, 850)
+    }
+  }
+}
+
+function showPopupAt(coordinate, data) {
+  popupData.value = data
+  popupOverlay.setPosition(coordinate)
+  popupVisible.value = true
 }
 
 // 更新地图图层
@@ -271,35 +492,37 @@ function bindMapEvents() {
     }
   })
 
-  // 点击事件
   clickHandler = olMap.on('click', (evt) => {
-    const pixel = olMap.getEventPixel(evt.originalEvent)
-    const feature = olMap.forEachFeatureAtPixel(pixel, (f) => f)
+    const feature = olMap.forEachFeatureAtPixel(evt.pixel, (f) => f)
 
     if (feature && feature.get('name')) {
-      const townName = feature.get('name')
-      const townData = townInfo[townName] || { population: 0, area: 0, gdp: 0 }
+      const pointType = feature.get('pointType')
 
-      popupTown.value = {
-        name: townName,
-        ...townData
+      if (pointType) {
+        showPopupAt(evt.coordinate, buildPopupData(feature))
+      } else {
+        const townName = feature.get('name')
+        const townDataItem = townInfo[townName] || { population: 0, area: 0, gdp: 0 }
+        showPopupAt(evt.coordinate, {
+          title: townName,
+          items: [
+            { label: '人口', value: formatNumber(townDataItem.population) + '人' },
+            { label: '面积', value: townDataItem.area + 'km²' },
+            { label: 'GDP', value: townDataItem.gdp + '亿元' }
+          ]
+        })
       }
-
-      // 计算弹窗位置
-      const coordinate = evt.coordinate
-      const pixelPos = olMap.getPixelFromCoordinate(coordinate)
-      popupPosition.value = {
-        x: pixelPos[0] - 100,
-        y: pixelPos[1] - 150
-      }
-      popupVisible.value = true
+    } else {
+      closePopup()
     }
   })
 }
 
-// 关闭弹窗
 function closePopup() {
   popupVisible.value = false
+  if (popupOverlay) {
+    popupOverlay.setPosition(undefined)
+  }
 }
 
 // 监听菜单变化
@@ -326,6 +549,15 @@ onUnmounted(() => {
     mapInstance.destroy()
     mapInstance = null
   }
+})
+
+defineExpose({
+  toggleTownshipPoints,
+  toggleSchoolPoints,
+  toggleHospitalPoints,
+  flyToTown,
+  flyToSchool,
+  flyToHospital
 })
 </script>
 
@@ -356,7 +588,7 @@ onUnmounted(() => {
 }
 
 .ol-popup {
-  position: absolute;
+  pointer-events: auto;
   z-index: 1000;
 }
 

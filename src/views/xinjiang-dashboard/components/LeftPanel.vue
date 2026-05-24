@@ -47,6 +47,12 @@
       <div class="card-header">
         <span class="card-icon">📋</span>
         <span class="card-title">乡镇综合数据</span>
+        <ToggleIconButton
+          :icon="townshipIcon"
+          :active="townshipPointsVisible"
+          class="header-toggle-btn"
+          @toggle="$emit('toggle-township-points')"
+        />
       </div>
       <div class="card-content">
         <el-table
@@ -101,13 +107,21 @@
 import { ref, computed, onMounted } from 'vue'
 import * as echarts from 'echarts'
 import { countyOverview, townData, economicData } from '@/views/xinjiang-dashboard/core/mockData.js'
+import ToggleIconButton from '@/components/ToggleIconButton/index.vue'
+import townshipIcon from '@/assets/images/map/point/township.png'
 
 const props = defineProps({
   activeMenu: {
     type: String,
     default: 'overview'
+  },
+  townshipPointsVisible: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emit = defineEmits(['toggle-township-points', 'town-row-click'])
 
 const gdpChartRef = ref(null)
 let gdpChart = null
@@ -139,7 +153,7 @@ function formatGdp(row) {
 
 // 行点击事件
 function handleRowClick(row) {
-  console.log('点击了乡镇:', row.name)
+  emit('town-row-click', row)
 }
 
 // 初始化GDP图表
@@ -298,6 +312,13 @@ window.addEventListener('resize', () => {
   }
 
   .town-table-card {
+    .card-header {
+      justify-content: flex-start;
+    }
+
+    .header-toggle-btn {
+      margin-left: auto;
+    }
     .card-content {
       overflow: hidden;
       padding: 0;

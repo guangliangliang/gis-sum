@@ -1,44 +1,56 @@
 <template>
   <aside class="side-panel right-panel">
     <!-- 学校资源 -->
-    <div class="panel-card equal-card table-card">
+    <div class="panel-card equal-card list-card">
       <div class="card-header">
         <span class="card-icon">🏫</span>
         <span class="card-title">学校资源</span>
+        <ToggleIconButton
+          :icon="schoolIcon"
+          :active="schoolPointsVisible"
+          class="header-toggle-btn"
+          @toggle="$emit('toggle-school-points')"
+        />
       </div>
       <div class="card-content equal-content">
-        <el-table
-          :data="schoolTableData"
-          style="width: 100%"
-          height="100%"
-          :header-cell-style="{ background: 'rgba(0, 212, 255, 0.1)', color: '#00d4ff' }"
-          :cell-style="{ color: '#9ba7b8', borderColor: 'rgba(0, 212, 255, 0.1)' }"
-        >
-          <el-table-column prop="category" label="分类" align="center" />
-          <el-table-column prop="count" label="数量" align="center" />
-          <el-table-column prop="unit" label="单位" align="center" />
-        </el-table>
+        <div class="item-list">
+          <div
+            class="list-item"
+            v-for="item in schoolList"
+            :key="item.name"
+            @click="$emit('school-row-click', item)"
+          >
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-tag">{{ schoolTypeMap[item.type] || item.type }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- 医疗资源 -->
-    <div class="panel-card equal-card table-card">
+    <div class="panel-card equal-card list-card">
       <div class="card-header">
         <span class="card-icon">🏥</span>
         <span class="card-title">医疗资源</span>
+        <ToggleIconButton
+          :icon="hospitalIcon"
+          :active="hospitalPointsVisible"
+          class="header-toggle-btn"
+          @toggle="$emit('toggle-hospital-points')"
+        />
       </div>
       <div class="card-content equal-content">
-        <el-table
-          :data="hospitalTableData"
-          style="width: 100%"
-          height="100%"
-          :header-cell-style="{ background: 'rgba(0, 212, 255, 0.1)', color: '#00d4ff' }"
-          :cell-style="{ color: '#9ba7b8', borderColor: 'rgba(0, 212, 255, 0.1)' }"
-        >
-          <el-table-column prop="category" label="分类" align="center" />
-          <el-table-column prop="count" label="数量" align="center" />
-          <el-table-column prop="unit" label="单位" align="center" />
-        </el-table>
+        <div class="item-list">
+          <div
+            class="list-item"
+            v-for="item in hospitalList"
+            :key="item.name"
+            @click="$emit('hospital-row-click', item)"
+          >
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-tag">{{ item.level }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -56,34 +68,38 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as echarts from 'echarts'
-import {
-  livelihoodData as livelihoodMockData,
-  tourismData
-} from '@/views/xinjiang-dashboard/core/mockData.js'
+import { schoolPoints, hospitalPoints, tourismData } from '@/views/xinjiang-dashboard/core/mockData.js'
+import ToggleIconButton from '@/components/ToggleIconButton/index.vue'
+import schoolIcon from '@/assets/images/map/point/school.png'
+import hospitalIcon from '@/assets/images/map/point/hospital.png'
+
+defineProps({
+  schoolPointsVisible: {
+    type: Boolean,
+    default: false
+  },
+  hospitalPointsVisible: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['toggle-school-points', 'toggle-hospital-points', 'school-row-click', 'hospital-row-click'])
+
+const schoolList = schoolPoints
+const hospitalList = hospitalPoints
+
+const schoolTypeMap = {
+  high: '高中',
+  middle: '初中',
+  primary: '小学'
+}
 
 const tourismChartRef = ref(null)
 let tourismChart = null
 
-const livelihoodData = livelihoodMockData
-
-// 学校表格数据
-const schoolTableData = computed(() => [
-  { category: '高中', count: livelihoodData.schools.high, unit: '所' },
-  { category: '初中', count: livelihoodData.schools.middle, unit: '所' },
-  { category: '小学', count: livelihoodData.schools.primary, unit: '所' },
-  { category: '幼儿园', count: livelihoodData.schools.kindergarten, unit: '所' }
-])
-
-// 医院表格数据
-const hospitalTableData = computed(() => [
-  { category: '二级医院', count: livelihoodData.hospitals.level2, unit: '所' },
-  { category: '一级医院', count: livelihoodData.hospitals.level1, unit: '所' },
-  { category: '诊所/卫生室', count: livelihoodData.hospitals.clinics, unit: '所' }
-])
-
-// 初始化旅游趋势图
 function initTourismChart() {
   if (!tourismChartRef.value) return
 
@@ -158,7 +174,6 @@ onMounted(() => {
   initTourismChart()
 })
 
-// 窗口大小变化时重绘
 window.addEventListener('resize', () => {
   tourismChart && tourismChart.resize()
 })
@@ -196,70 +211,67 @@ window.addEventListener('resize', () => {
     }
   }
 
-  .table-card {
+  .list-card {
+    .card-header {
+      justify-content: flex-start;
+    }
+
+    .header-toggle-btn {
+      margin-left: auto;
+    }
+
     .equal-content {
-      overflow: hidden;
+      overflow-y: auto;
       padding: 0;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 212, 255, 0.3);
+        border-radius: 2px;
+      }
     }
 
-    :deep(.el-table) {
-      background-color: transparent;
-      font-size: 12px;
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    :deep(.el-table tr) {
-      background-color: transparent;
-    }
-
-    :deep(.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell) {
-      background-color: transparent;
-      border-bottom: 1px solid rgb(0 212 255 / 30%);
-      border-top: 1px solid rgb(0 212 255 / 30%);
-      color: #00d4ff;
+    .list-item {
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
       cursor: pointer;
-    }
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 10px;
+      transition: all 0.2s ease;
 
-    :deep(.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell:first-child) {
-      border-left: 1px solid rgb(0 212 255 / 30%);
-    }
+      &:hover {
+        background: rgba(0, 212, 255, 0.08);
+        border-bottom-color: rgba(0, 212, 255, 0.3);
+      }
 
-    :deep(.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell:last-child) {
-      border-right: 1px solid rgb(0 212 255 / 30%);
-    }
+      .item-name {
+        color: #e0e6ed;
+        font-size: 12px;
+      }
 
-    :deep(.el-table__body tr:hover td) {
-      border-bottom: 1px solid rgb(0 212 255 / 30%);
-      border-top: 1px solid rgb(0 212 255 / 30%);
-      color: #00d4ff;
-    }
-
-    :deep(.el-table__body tr:hover td:first-child) {
-      border-left: 1px solid rgb(0 212 255 / 30%);
-    }
-
-    :deep(.el-table__body tr:hover td:last-child) {
-      border-right: 1px solid rgb(0 212 255 / 30%);
-    }
-
-    :deep(.el-table td),
-    :deep(.el-table th.is-leaf) {
-      border-color: rgb(0 212 255 / 10%);
-    }
-
-    :deep(.el-table::before) {
-      display: none;
-    }
-
-    :deep(.el-table--fit .el-table__inner-wrapper::before) {
-      display: none;
-    }
-
-    :deep(.el-table th) {
-      padding: 8px 0;
-    }
-
-    :deep(.el-table td) {
-      padding: 6px 0;
+      .item-tag {
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        border-radius: 3px;
+        color: #00d4ff;
+        font-size: 11px;
+        padding: 1px 6px;
+        white-space: nowrap;
+      }
     }
   }
 }
