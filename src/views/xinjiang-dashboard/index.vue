@@ -7,7 +7,7 @@
     <div class="corner-decoration bottom-right"></div>
 
     <!-- 顶部标题栏 -->
-    <DashboardHeader @menu-change="handleMenuChange" />
+    <DashboardHeader />
 
     <!-- 主内容区 -->
     <div class="dashboard-main">
@@ -31,11 +31,6 @@ import RightPanel from '@/views/xinjiang-dashboard/components/RightPanel.vue'
 import CenterMap from '@/views/xinjiang-dashboard/components/CenterMap.vue'
 
 const activeMenu = ref('overview')
-
-// 菜单切换
-function handleMenuChange(menuKey) {
-  activeMenu.value = menuKey
-}
 </script>
 
 <style scoped lang="scss">

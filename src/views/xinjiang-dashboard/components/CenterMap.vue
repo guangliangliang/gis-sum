@@ -122,7 +122,10 @@ async function initMap() {
     const controlManager = mapInstance.getControlManager()
     controlManager.addZoomControl({ target: controlsContainer.value })
     controlManager.addFullscreenControl({ target: controlsContainer.value })
-    controlManager.addBaseMapSwitcherControl({ target: controlsContainer.value })
+    controlManager.addBaseMapSwitcherControl({ 
+      target: controlsContainer.value, 
+      baseMapManager: mapInstance.getBaseMapManager() 
+    })
     controlManager.addScaleControl({}, { bottom: '20px', left: '380px' })
 
     // 添加乡镇边界图层

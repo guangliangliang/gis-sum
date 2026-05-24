@@ -23,17 +23,14 @@ class BaseMapManager {
       this.map.removeLayer(layers[baseLayerIndex])
     }
 
-    const isOSM = !baseUrl.includes('tianditu')
     const baseLayer = new TileLayer({
       properties: { id: 'baseLayer' },
       preload: Number.POSITIVE_INFINITY,
-      source: isOSM
-        ? new OSM()
-        : new XYZ({
-            attributions: ATTRIBUTIONS,
-            crossOrigin: 'anonymous',
-            url: baseUrl
-          })
+      source: new XYZ({
+        attributions: baseUrl.includes('tianditu') ? ATTRIBUTIONS : '',
+        crossOrigin: 'anonymous',
+        url: baseUrl
+      })
     })
     this.map.getLayers().insertAt(0, baseLayer)
 
