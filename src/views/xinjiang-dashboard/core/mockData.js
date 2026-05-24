@@ -13,15 +13,15 @@ export const townNames = [
 
 // 乡镇基础数据
 export const townData = [
-  { name: '古交镇', population: 35000, area: 57.2, gdp: 12.5, lng: 111.143434, lat: 35.615750, address: '上院泽古线古交镇政府古交镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/ee85665e7efa1e52813f59f84bd2a3ee'] },
-  { name: '龙兴镇', population: 85000, area: 72.5, gdp: 45.8, lng: 111.211985, lat: 35.612765, address: '新北建街与站北路交叉口西南60米', tel: '-', openTime: '周一至周五 09:00-17:00', photos: [] },
-  { name: '阳王镇', population: 28000, area: 65.8, gdp: 8.6, lng: 111.118976, lat: 35.506770, address: '原阳王中心校', tel: '0359-7822403', openTime: '-', photos: [] },
-  { name: '泽掌镇', population: 32000, area: 78.3, gdp: 15.2, lng: 111.162467, lat: 35.719596, address: '泽古线泽掌镇政府泽掌镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/d14ce60bf422ae29f285c8036a866d97'] },
-  { name: '三泉镇', population: 42000, area: 85.6, gdp: 22.3, lng: 111.165988, lat: 35.676809, address: '三泉镇政府三泉镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/c34773d25d6b8d228b2414fc80459c0d'] },
-  { name: '泉掌镇', population: 25000, area: 45.2, gdp: 7.8, lng: 111.110989, lat: 35.661744, address: '泉掌镇', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/2bad6cfee798361c9f2b4daffd764e12'] },
-  { name: '横桥镇', population: 38000, area: 92.5, gdp: 18.5, lng: 111.230622, lat: 35.574739, address: '南马新北线横桥镇政府', tel: '-', openTime: '-', photos: ['http://store.is.autonavi.com/showpic/486334b4b3c28a0231f7a98bd1062dfa'] },
-  { name: '万安镇', population: 30000, area: 62.3, gdp: 10.2, lng: 111.131800, lat: 35.539670, address: '万安镇新闻路', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/8b4ee5d266d4788ac5b70d1786347480'] },
-  { name: '北张镇', population: 27000, area: 58.7, gdp: 9.5, lng: 111.112381, lat: 35.703976, address: '泽古线', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/e8069e283d7888546be335bc3408dbb0'] }
+  { name: '古交镇', population: 35000, area: 57.2, gdp: 12.5, lng: 111.13728, lat: 35.615835, address: '上院泽古线古交镇政府古交镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/ee85665e7efa1e52813f59f84bd2a3ee'] },
+  { name: '龙兴镇', population: 85000, area: 72.5, gdp: 45.8, lng: 111.205916, lat: 35.61297, address: '新北建街与站北路交叉口西南60米', tel: '-', openTime: '周一至周五 09:00-17:00', photos: [] },
+  { name: '阳王镇', population: 28000, area: 65.8, gdp: 8.6, lng: 111.112818, lat: 35.506893, address: '原阳王中心校', tel: '0359-7822403', openTime: '-', photos: [] },
+  { name: '泽掌镇', population: 32000, area: 78.3, gdp: 15.2, lng: 111.156325, lat: 35.719663, address: '泽古线泽掌镇政府泽掌镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/d14ce60bf422ae29f285c8036a866d97'] },
+  { name: '三泉镇', population: 42000, area: 85.6, gdp: 22.3, lng: 111.159855, lat: 35.676902, address: '三泉镇政府三泉镇委', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/c34773d25d6b8d228b2414fc80459c0d'] },
+  { name: '泉掌镇', population: 25000, area: 45.2, gdp: 7.8, lng: 111.104816, lat: 35.66177, address: '泉掌镇', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/2bad6cfee798361c9f2b4daffd764e12'] },
+  { name: '横桥镇', population: 38000, area: 92.5, gdp: 18.5, lng: 111.224564, lat: 35.574984, address: '南马新北线横桥镇政府', tel: '-', openTime: '-', photos: ['http://store.is.autonavi.com/showpic/486334b4b3c28a0231f7a98bd1062dfa'] },
+  { name: '万安镇', population: 30000, area: 62.3, gdp: 10.2, lng: 111.125644, lat: 35.539784, address: '万安镇新闻路', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/8b4ee5d266d4788ac5b70d1786347480'] },
+  { name: '北张镇', population: 27000, area: 58.7, gdp: 9.5, lng: 111.106203, lat: 35.703983, address: '泽古线', tel: '-', openTime: '周一至周五 09:00-17:00', photos: ['http://store.is.autonavi.com/showpic/e8069e283d7888546be335bc3408dbb0'] }
 ]
 
 // 新绛县总体数据
@@ -39,8 +39,8 @@ export const countyOverview = {
 export const schoolPoints = [
   {
     "name": "新纺学校",
-    "lng": 111.197015,
-    "lat": 35.591464,
+    "lng": 111.190933,
+    "lat": 35.591659,
     "type": "school",
     "address": "顺城街293号",
     "tel": "-",
@@ -53,8 +53,8 @@ export const schoolPoints = [
   },
   {
     "name": "海泉中学",
-    "lng": 111.210933,
-    "lat": 35.629541,
+    "lng": 111.204861,
+    "lat": 35.629735,
     "type": "middle",
     "address": "迎宾路与荀子路交叉口西160米",
     "tel": "0359-8791999",
@@ -67,8 +67,8 @@ export const schoolPoints = [
   },
   {
     "name": "海泉学校(东校区)",
-    "lng": 111.211794,
-    "lat": 35.626832,
+    "lng": 111.205723,
+    "lat": 35.627029,
     "type": "middle",
     "address": "商品一条街",
     "tel": "-",
@@ -81,8 +81,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛中学",
-    "lng": 111.222277,
-    "lat": 35.642085,
+    "lng": 111.21621,
+    "lat": 35.642286,
     "type": "middle",
     "address": "峨眉路附近",
     "tel": "-",
@@ -95,8 +95,8 @@ export const schoolPoints = [
   },
   {
     "name": "海泉学校",
-    "lng": 111.231487,
-    "lat": 35.615132,
+    "lng": 111.225425,
+    "lat": 35.615355,
     "type": "middle",
     "address": "-",
     "tel": "-",
@@ -109,8 +109,8 @@ export const schoolPoints = [
   },
   {
     "name": "海泉学校(西校区)",
-    "lng": 111.206016,
-    "lat": 35.630485,
+    "lng": 111.19994,
+    "lat": 35.630672,
     "type": "primary",
     "address": "荀子街与文体路交叉口西200米",
     "tel": "-",
@@ -123,8 +123,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县第二中学",
-    "lng": 111.202969,
-    "lat": 35.628933,
+    "lng": 111.19689,
+    "lat": 35.629116,
     "type": "middle",
     "address": "学府花园旁边",
     "tel": "0359-7528703",
@@ -137,8 +137,8 @@ export const schoolPoints = [
   },
   {
     "name": "新华学校",
-    "lng": 111.216482,
-    "lat": 35.61792,
+    "lng": 111.210415,
+    "lat": 35.618127,
     "type": "vocational",
     "address": "龙兴镇正平街95号",
     "tel": "13935965320",
@@ -150,8 +150,8 @@ export const schoolPoints = [
   },
   {
     "name": "礼乐园新华学校小学部",
-    "lng": 111.220736,
-    "lat": 35.620132,
+    "lng": 111.214671,
+    "lat": 35.620343,
     "type": "primary",
     "address": "内朝殿路49号",
     "tel": "0359-7526852",
@@ -164,8 +164,8 @@ export const schoolPoints = [
   },
   {
     "name": "龙兴中学",
-    "lng": 111.206708,
-    "lat": 35.623353,
+    "lng": 111.200633,
+    "lat": 35.623545,
     "type": "middle",
     "address": "新绛县文体路与011乡道交叉口南140米",
     "tel": "-",
@@ -176,8 +176,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县龙兴学校",
-    "lng": 111.231711,
-    "lat": 35.619113,
+    "lng": 111.225649,
+    "lat": 35.619334,
     "type": "vocational",
     "address": "东门街9号附近",
     "tel": "-",
@@ -188,8 +188,8 @@ export const schoolPoints = [
   },
   {
     "name": "西关学校",
-    "lng": 111.211251,
-    "lat": 35.613742,
+    "lng": 111.205181,
+    "lat": 35.613945,
     "type": "school",
     "address": "法院斜对面",
     "tel": "-",
@@ -202,8 +202,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛汾河中学",
-    "lng": 111.244077,
-    "lat": 35.599989,
+    "lng": 111.238013,
+    "lat": 35.600226,
     "type": "middle",
     "address": "108国道",
     "tel": "-",
@@ -214,8 +214,8 @@ export const schoolPoints = [
   },
   {
     "name": "东街逸夫学校",
-    "lng": 111.228658,
-    "lat": 35.615354,
+    "lng": 111.222596,
+    "lat": 35.615574,
     "type": "middle",
     "address": "社区办新绛县东街",
     "tel": "-",
@@ -227,8 +227,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县古交中学",
-    "lng": 111.147261,
-    "lat": 35.614252,
+    "lng": 111.141111,
+    "lat": 35.614344,
     "type": "middle",
     "address": "古交镇",
     "tel": "-",
@@ -239,8 +239,8 @@ export const schoolPoints = [
   },
   {
     "name": "育英学校",
-    "lng": 111.184233,
-    "lat": 35.681783,
+    "lng": 111.178126,
+    "lat": 35.681908,
     "type": "school",
     "address": "三泉镇三泉村路口",
     "tel": "-",
@@ -251,8 +251,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县希望学校",
-    "lng": 111.20889,
-    "lat": 35.626805,
+    "lng": 111.202817,
+    "lat": 35.626998,
     "type": "middle",
     "address": "龙兴镇庄儿头华新线希望学校",
     "tel": "-",
@@ -263,8 +263,8 @@ export const schoolPoints = [
   },
   {
     "name": "席村学校",
-    "lng": 111.168858,
-    "lat": 35.650168,
+    "lng": 111.162732,
+    "lat": 35.65028,
     "type": "middle",
     "address": "030乡道与039乡道交叉口西340米",
     "tel": "-",
@@ -275,8 +275,8 @@ export const schoolPoints = [
   },
   {
     "name": "北张中学",
-    "lng": 111.109685,
-    "lat": 35.705286,
+    "lng": 111.103508,
+    "lat": 35.705291,
     "type": "middle",
     "address": "北张镇泽古线青少年业余体校",
     "tel": "-",
@@ -288,8 +288,8 @@ export const schoolPoints = [
   },
   {
     "name": "狄庄学校",
-    "lng": 111.259254,
-    "lat": 35.599636,
+    "lng": 111.253177,
+    "lat": 35.599872,
     "type": "primary",
     "address": "横桥镇108国道",
     "tel": "-",
@@ -300,8 +300,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县东城学校",
-    "lng": 111.237261,
-    "lat": 35.6154,
+    "lng": 111.231198,
+    "lat": 35.615626,
     "type": "middle",
     "address": "东门街165号",
     "tel": "-",
@@ -314,8 +314,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县三泉镇三泉学校",
-    "lng": 111.161058,
-    "lat": 35.676164,
+    "lng": 111.154919,
+    "lat": 35.676248,
     "type": "primary",
     "address": "三泉镇三泉村",
     "tel": "-",
@@ -328,8 +328,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县特殊教育学校",
-    "lng": 111.203776,
-    "lat": 35.62376,
+    "lng": 111.197698,
+    "lat": 35.623947,
     "type": "school",
     "address": "教育局教研室",
     "tel": "-",
@@ -342,8 +342,8 @@ export const schoolPoints = [
   },
   {
     "name": "万安学校",
-    "lng": 111.136945,
-    "lat": 35.542889,
+    "lng": 111.130792,
+    "lat": 35.543008,
     "type": "school",
     "address": "万安镇万安村",
     "tel": "-",
@@ -354,8 +354,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县北张学校",
-    "lng": 111.11105,
-    "lat": 35.707684,
+    "lng": 111.104872,
+    "lat": 35.707688,
     "type": "primary",
     "address": "北张镇泽古线北张示范小学",
     "tel": "-",
@@ -367,8 +367,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县三泉镇水西学校",
-    "lng": 111.18662,
-    "lat": 35.639211,
+    "lng": 111.18052,
+    "lat": 35.639361,
     "type": "school",
     "address": "039乡道南50米",
     "tel": "-",
@@ -381,8 +381,8 @@ export const schoolPoints = [
   },
   {
     "name": "娄庄学校",
-    "lng": 111.264938,
-    "lat": 35.639796,
+    "lng": 111.258849,
+    "lat": 35.640007,
     "type": "school",
     "address": "龙兴镇娄庄村",
     "tel": "-",
@@ -393,8 +393,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县泉掌中学",
-    "lng": 111.10793,
-    "lat": 35.660052,
+    "lng": 111.101758,
+    "lat": 35.660077,
     "type": "middle",
     "address": "泉掌镇泽古线泉掌中学",
     "tel": "-",
@@ -405,8 +405,8 @@ export const schoolPoints = [
   },
   {
     "name": "南关学校",
-    "lng": 111.228237,
-    "lat": 35.601169,
+    "lng": 111.222176,
+    "lat": 35.601397,
     "type": "primary",
     "address": "南关村044号",
     "tel": "-",
@@ -417,8 +417,8 @@ export const schoolPoints = [
   },
   {
     "name": "阳王中学",
-    "lng": 111.127257,
-    "lat": 35.508969,
+    "lng": 111.121102,
+    "lat": 35.509098,
     "type": "middle",
     "address": "阳王村",
     "tel": "-",
@@ -429,8 +429,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县光村学校",
-    "lng": 111.175739,
-    "lat": 35.752984,
+    "lng": 111.169612,
+    "lat": 35.753063,
     "type": "school",
     "address": "清泽线与799县道交叉口北500米",
     "tel": "-",
@@ -442,8 +442,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县龙泉学校",
-    "lng": 111.17043,
-    "lat": 35.614517,
+    "lng": 111.16431,
+    "lat": 35.614651,
     "type": "school",
     "address": "古交镇",
     "tel": "-",
@@ -454,8 +454,8 @@ export const schoolPoints = [
   },
   {
     "name": "泽掌中学",
-    "lng": 111.16649,
-    "lat": 35.714746,
+    "lng": 111.160354,
+    "lat": 35.714823,
     "type": "middle",
     "address": "泽掌镇泽掌村",
     "tel": "-",
@@ -466,8 +466,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县古交镇周流学校",
-    "lng": 111.112139,
-    "lat": 35.600658,
+    "lng": 111.105972,
+    "lat": 35.600717,
     "type": "school",
     "address": "古交镇周流村",
     "tel": "-",
@@ -478,8 +478,8 @@ export const schoolPoints = [
   },
   {
     "name": "店头寄宿制学校",
-    "lng": 111.279158,
-    "lat": 35.668004,
+    "lng": 111.273041,
+    "lat": 35.668189,
     "type": "school",
     "address": "龙兴镇店头村店头",
     "tel": "-",
@@ -492,8 +492,8 @@ export const schoolPoints = [
   },
   {
     "name": "符村学校",
-    "lng": 111.226492,
-    "lat": 35.564668,
+    "lng": 111.220435,
+    "lat": 35.564916,
     "type": "school",
     "address": "横桥乡",
     "tel": "-",
@@ -504,8 +504,8 @@ export const schoolPoints = [
   },
   {
     "name": "北王马学校",
-    "lng": 111.189321,
-    "lat": 35.628704,
+    "lng": 111.183226,
+    "lat": 35.628865,
     "type": "school",
     "address": "-",
     "tel": "-",
@@ -514,8 +514,8 @@ export const schoolPoints = [
   },
   {
     "name": "东薛郭学校",
-    "lng": 111.127634,
-    "lat": 35.642854,
+    "lng": 111.121465,
+    "lat": 35.642903,
     "type": "school",
     "address": "-",
     "tel": "-",
@@ -526,8 +526,8 @@ export const schoolPoints = [
   },
   {
     "name": "横桥中学",
-    "lng": 111.231625,
-    "lat": 35.575425,
+    "lng": 111.225567,
+    "lat": 35.575671,
     "type": "middle",
     "address": "临夏线1号",
     "tel": "-",
@@ -538,8 +538,8 @@ export const schoolPoints = [
   },
   {
     "name": "王村学校",
-    "lng": 111.174278,
-    "lat": 35.57568,
+    "lng": 111.168168,
+    "lat": 35.575843,
     "type": "school",
     "address": "古交镇",
     "tel": "-",
@@ -550,8 +550,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县新城幼儿园",
-    "lng": 111.230975,
-    "lat": 35.639275,
+    "lng": 111.224911,
+    "lat": 35.639484,
     "type": "school",
     "address": "绛州大道与市府大道交叉口北320米",
     "tel": "-",
@@ -564,8 +564,8 @@ export const schoolPoints = [
   },
   {
     "name": "富力城幼儿园",
-    "lng": 111.218164,
-    "lat": 35.628532,
+    "lng": 111.212097,
+    "lat": 35.628735,
     "type": "school",
     "address": "荀子路与府西路交叉口西南180米",
     "tel": "13753992228",
@@ -578,8 +578,8 @@ export const schoolPoints = [
   },
   {
     "name": "西庄学校",
-    "lng": 111.116592,
-    "lat": 35.728668,
+    "lng": 111.110411,
+    "lat": 35.728667,
     "type": "school",
     "address": "006乡道",
     "tel": "-",
@@ -591,8 +591,8 @@ export const schoolPoints = [
   },
   {
     "name": "南苏村学校",
-    "lng": 111.165899,
-    "lat": 35.592224,
+    "lng": 111.159775,
+    "lat": 35.592362,
     "type": "school",
     "address": "临夏线",
     "tel": "-",
@@ -603,8 +603,8 @@ export const schoolPoints = [
   },
   {
     "name": "乔沟头学校",
-    "lng": 111.168134,
-    "lat": 35.76961,
+    "lng": 111.161995,
+    "lat": 35.769668,
     "type": "school",
     "address": "泽掌镇",
     "tel": "-",
@@ -617,8 +617,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县第二幼儿园",
-    "lng": 111.227451,
-    "lat": 35.615068,
+    "lng": 111.221389,
+    "lat": 35.615288,
     "type": "school",
     "address": "桥北路45号",
     "tel": "-",
@@ -630,8 +630,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县幼儿园",
-    "lng": 111.219742,
-    "lat": 35.613386,
+    "lng": 111.213677,
+    "lat": 35.613599,
     "type": "school",
     "address": "西关路与新北建街交叉口东北120米",
     "tel": "-",
@@ -642,8 +642,8 @@ export const schoolPoints = [
   },
   {
     "name": "新纺幼儿园",
-    "lng": 111.196986,
-    "lat": 35.589163,
+    "lng": 111.190905,
+    "lat": 35.589359,
     "type": "school",
     "address": "-",
     "tel": "-",
@@ -656,8 +656,8 @@ export const schoolPoints = [
   },
   {
     "name": "老一中",
-    "lng": 111.219825,
-    "lat": 35.616975,
+    "lng": 111.21376,
+    "lat": 35.617186,
     "type": "middle",
     "address": "正平街与城壕路交叉口东120米",
     "tel": "-",
@@ -666,8 +666,8 @@ export const schoolPoints = [
   },
   {
     "name": "星韵艺术培训学校",
-    "lng": 111.21715,
-    "lat": 35.62748,
+    "lng": 111.211083,
+    "lat": 35.627683,
     "type": "school",
     "address": "龙兴镇富力城步行街",
     "tel": "-",
@@ -678,8 +678,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县职业教育中心",
-    "lng": 111.210178,
-    "lat": 35.63061,
+    "lng": 111.204105,
+    "lat": 35.630802,
     "type": "vocational",
     "address": "新苏线与迎宾路交叉口西220米",
     "tel": "-",
@@ -691,8 +691,8 @@ export const schoolPoints = [
   },
   {
     "name": "新绛县职业教育中心西校区",
-    "lng": 111.206125,
-    "lat": 35.627797,
+    "lng": 111.200049,
+    "lat": 35.627985,
     "type": "vocational",
     "address": "文体路与荀子街交叉口西南260米",
     "tel": "-",
@@ -708,8 +708,8 @@ export const schoolPoints = [
 export const hospitalPoints = [
   {
     "name": "新绛县人民医院",
-    "lng": 111.220457,
-    "lat": 35.631331,
+    "lng": 111.214391,
+    "lat": 35.631535,
     "level": "综合医院",
     "address": "043乡道附近",
     "tel": "0359-7523873",
@@ -721,8 +721,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县中医院",
-    "lng": 111.2185,
-    "lat": 35.606579,
+    "lng": 111.212435,
+    "lat": 35.606795,
     "level": "综合医院",
     "address": "顺城街与站南路交叉口东420米",
     "tel": "0359-7522033",
@@ -734,8 +734,8 @@ export const hospitalPoints = [
   },
   {
     "name": "下堡卫生院",
-    "lng": 111.107228,
-    "lat": 35.641461,
+    "lng": 111.101058,
+    "lat": 35.641495,
     "level": "卫生院",
     "address": "028乡道与014乡道交叉口西南220米",
     "tel": "-",
@@ -744,8 +744,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛民安医院",
-    "lng": 111.216182,
-    "lat": 35.627385,
+    "lng": 111.210114,
+    "lat": 35.627587,
     "level": "综合医院",
     "address": "富力城西苑西门南70米",
     "tel": "-",
@@ -757,8 +757,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县龙兴镇卫生院",
-    "lng": 111.226326,
-    "lat": 35.612363,
+    "lng": 111.220264,
+    "lat": 35.612583,
     "level": "卫生院",
     "address": "朝殿路49号绛州古城",
     "tel": "-",
@@ -771,8 +771,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县三泉镇卫生院",
-    "lng": 111.165528,
-    "lat": 35.669381,
+    "lng": 111.159396,
+    "lat": 35.669477,
     "level": "卫生院",
     "address": "002乡道与039乡道交叉口北380米",
     "tel": "0359-7580515",
@@ -784,8 +784,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛纺织厂医院",
-    "lng": 111.202375,
-    "lat": 35.59223,
+    "lng": 111.196299,
+    "lat": 35.592433,
     "level": "综合医院",
     "address": "108国道附近",
     "tel": "-",
@@ -796,8 +796,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛南社卫生医院",
-    "lng": 111.222303,
-    "lat": 35.681727,
+    "lng": 111.216232,
+    "lat": 35.681908,
     "level": "卫生院",
     "address": "010乡道与801县道交叉口西南60米",
     "tel": "0359-7670105",
@@ -810,8 +810,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县医疗集团张镇北董村卫生所",
-    "lng": 111.080997,
-    "lat": 35.709008,
+    "lng": 111.074851,
+    "lat": 35.709015,
     "level": "卫生院",
     "address": "北张镇北董村",
     "tel": "13111292612",
@@ -824,8 +824,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛万安卫生院",
-    "lng": 111.133937,
-    "lat": 35.538499,
+    "lng": 111.127783,
+    "lat": 35.538617,
     "level": "卫生院",
     "address": "004乡道与临夏线交叉口西320米",
     "tel": "-",
@@ -836,8 +836,8 @@ export const hospitalPoints = [
   },
   {
     "name": "韩家庄村卫生室",
-    "lng": 111.191677,
-    "lat": 35.564823,
+    "lng": 111.185592,
+    "lat": 35.565025,
     "level": "卫生院",
     "address": "802县道",
     "tel": "13734295204",
@@ -848,8 +848,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县店头村卫生所",
-    "lng": 111.280046,
-    "lat": 35.667713,
+    "lng": 111.273927,
+    "lat": 35.667897,
     "level": "卫生院",
     "address": "龙兴镇店头村",
     "tel": "13033413429",
@@ -862,8 +862,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县医疗集团阳王镇中心卫生院",
-    "lng": 111.121905,
-    "lat": 35.505814,
+    "lng": 111.115748,
+    "lat": 35.50594,
     "level": "卫生院",
     "address": "阳王镇南头临夏线阳王医院",
     "tel": "-",
@@ -876,8 +876,8 @@ export const hospitalPoints = [
   },
   {
     "name": "居园池社区卫生服务站",
-    "lng": 111.218285,
-    "lat": 35.62069,
+    "lng": 111.212219,
+    "lat": 35.620898,
     "level": "卫生院",
     "address": "城壕路55号",
     "tel": "13453913156;13453913256",
@@ -890,8 +890,8 @@ export const hospitalPoints = [
   },
   {
     "name": "古交镇中心卫生院",
-    "lng": 111.145993,
-    "lat": 35.615711,
+    "lng": 111.139841,
+    "lat": 35.6158,
     "level": "卫生院",
     "address": "古交镇泽古线北(新绛县古交地税所附近)",
     "tel": "-",
@@ -902,8 +902,8 @@ export const hospitalPoints = [
   },
   {
     "name": "柳泉医院",
-    "lng": 111.241591,
-    "lat": 35.599961,
+    "lng": 111.235529,
+    "lat": 35.600197,
     "level": "综合医院",
     "address": "新绛开发区",
     "tel": "-",
@@ -914,8 +914,8 @@ export const hospitalPoints = [
   },
   {
     "name": "四府街社区卫生服务站",
-    "lng": 111.230415,
-    "lat": 35.616307,
+    "lng": 111.224353,
+    "lat": 35.616528,
     "level": "卫生院",
     "address": "四府社区信合小区门口",
     "tel": "13834475937",
@@ -926,8 +926,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛县横桥中心卫生院",
-    "lng": 111.230765,
-    "lat": 35.575978,
+    "lng": 111.224707,
+    "lat": 35.576223,
     "level": "卫生院",
     "address": "802县道与025乡道交叉口西120米",
     "tel": "-",
@@ -938,8 +938,8 @@ export const hospitalPoints = [
   },
   {
     "name": "新绛康养医院",
-    "lng": 111.209087,
-    "lat": 35.632739,
+    "lng": 111.203013,
+    "lat": 35.632929,
     "level": "综合医院",
     "address": "新绛县民政局院内",
     "tel": "-",
@@ -952,8 +952,8 @@ export const hospitalPoints = [
   },
   {
     "name": "三泉镇北李村卫生室",
-    "lng": 111.173836,
-    "lat": 35.65552,
+    "lng": 111.167717,
+    "lat": 35.655638,
     "level": "卫生院",
     "address": "002乡道",
     "tel": "13834103507",
@@ -965,39 +965,39 @@ export const hospitalPoints = [
 ]
 // 旅游景点数据
 export const scenicPoints = [
-  { lng: 111.20, lat: 35.62, name: '绛州大堂', level: '4A' },
-  { lng: 111.19, lat: 35.61, name: '龙兴寺', level: '3A' },
-  { lng: 111.21, lat: 35.60, name: '钟楼', level: '2A' },
-  { lng: 111.18, lat: 35.63, name: '鼓乐广场', level: '3A' },
-  { lng: 111.16, lat: 35.58, name: '光村遗址', level: '4A' },
-  { lng: 111.22, lat: 35.59, name: '福胜寺', level: '3A' }
+  { lng: 111.193919, lat: 35.620183, name: '绛州大堂', level: '4A' },
+  { lng: 111.183908, lat: 35.610172, name: '龙兴寺', level: '3A' },
+  { lng: 111.203931, lat: 35.600209, name: '钟楼', level: '2A' },
+  { lng: 111.173892, lat: 35.630143, name: '鼓乐广场', level: '3A' },
+  { lng: 111.153869, lat: 35.580134, name: '光村遗址', level: '4A' },
+  { lng: 111.213938, lat: 35.590227, name: '福胜寺', level: '3A' }
 ]
 
 // 企业数据
 export const enterprisePoints = [
-  { lng: 111.25, lat: 35.61, name: '新绛煤化园区', type: 'industry' },
-  { lng: 111.24, lat: 35.63, name: '化工产业园', type: 'industry' },
-  { lng: 111.19, lat: 35.59, name: '农产品加工园', type: 'agriculture' },
-  { lng: 111.23, lat: 35.62, name: '装备制造园', type: 'industry' },
-  { lng: 111.17, lat: 35.62, name: '建材产业园', type: 'industry' }
+  { lng: 111.243931, lat: 35.610232, name: '新绛煤化园区', type: 'industry' },
+  { lng: 111.233935, lat: 35.630219, name: '化工产业园', type: 'industry' },
+  { lng: 111.18391, lat: 35.590184, name: '农产品加工园', type: 'agriculture' },
+  { lng: 111.223938, lat: 35.620219, name: '装备制造园', type: 'industry' },
+  { lng: 111.163879, lat: 35.62013, name: '建材产业园', type: 'industry' }
 ]
 
 // 农业示范基地
 export const agriculturePoints = [
-  { lng: 111.18, lat: 35.59, name: '蔬菜种植基地', type: 'vegetable' },
-  { lng: 111.20, lat: 35.58, name: '果树种植园', type: 'fruit' },
-  { lng: 111.16, lat: 35.61, name: '养殖示范区', type: 'livestock' },
-  { lng: 111.22, lat: 35.60, name: '中药材种植园', type: 'herb' },
-  { lng: 111.19, lat: 35.64, name: '粮食高产田', type: 'grain' }
+  { lng: 111.173897, lat: 35.590165, name: '蔬菜种植基地', type: 'vegetable' },
+  { lng: 111.193923, lat: 35.580206, name: '果树种植园', type: 'fruit' },
+  { lng: 111.153866, lat: 35.610117, name: '养殖示范区', type: 'livestock' },
+  { lng: 111.213937, lat: 35.600221, name: '中药材种植园', type: 'herb' },
+  { lng: 111.183905, lat: 35.640156, name: '粮食高产田', type: 'grain' }
 ]
 
 // 美丽乡村示范村
 export const beautifulVillages = [
-  { lng: 111.17, lat: 35.60, name: '光村' },
-  { lng: 111.21, lat: 35.59, name: '西庄村' },
-  { lng: 111.19, lat: 35.64, name: '北张村' },
-  { lng: 111.23, lat: 35.61, name: '桥东村' },
-  { lng: 111.15, lat: 35.62, name: '泉掌村' }
+  { lng: 111.163881, lat: 35.600141, name: '光村' },
+  { lng: 111.203932, lat: 35.590215, name: '西庄村' },
+  { lng: 111.183905, lat: 35.640156, name: '北张村' },
+  { lng: 111.223939, lat: 35.610224, name: '桥东村' },
+  { lng: 111.143852, lat: 35.620094, name: '泉掌村' }
 ]
 
 // 经济数据
