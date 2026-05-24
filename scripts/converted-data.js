@@ -1,6 +1,6 @@
 
 // Converted school and hospital data
-// Generated: 2026-05-24T08:35:10.192Z
+// Generated: 2026-05-24T12:51:00.513Z
 
 export const schoolPoints = [
   {
@@ -640,6 +640,33 @@ export const schoolPoints = [
     "keytag": "科教文化服务,科教文化场所,科教文化场所",
     "photos": [
       "http://store.is.autonavi.com/showpic/2d3373e9f35f5593b8c70c239a01eeb0"
+    ]
+  },
+  {
+    "name": "新绛县职业教育中心",
+    "lng": 111.210178,
+    "lat": 35.63061,
+    "type": "vocational",
+    "address": "新苏线与迎宾路交叉口西220米",
+    "tel": "-",
+    "keytag": "中等专业学校",
+    "photos": [
+      "http://store.is.autonavi.com/showpic/1d898a7ddc398eb53ceb4ca5518aab2f",
+      "https://aos-comment.amap.com/B0FFFEW3QP/headerImg/2d2d4f9189eda065d1cacf2155b30fa9_2048_2048_80.jpg"
+    ]
+  },
+  {
+    "name": "新绛县职业教育中心西校区",
+    "lng": 111.206125,
+    "lat": 35.627797,
+    "type": "vocational",
+    "address": "文体路与荀子街交叉口西南260米",
+    "tel": "-",
+    "keytag": "职业高等学校",
+    "photos": [
+      "http://store.is.autonavi.com/showpic/5466e9131fe4fc29ede32e7453afd6b5",
+      "http://store.is.autonavi.com/showpic/2e93f133b6a387c4ccf26ecee0d9d179",
+      "http://store.is.autonavi.com/showpic/9005bea9d1906d07fb1a2ccccab77677"
     ]
   }
 ]

@@ -25,7 +25,7 @@ defineProps({
   background: linear-gradient(135deg, rgb(13 30 53 / 92%) 0%, rgb(16 39 68 / 88%) 100%);
   border: 1px solid rgb(0 212 255 / 30%);
   border-radius: 6px;
-  bottom: 50px;
+  bottom: 60px;
   left: 420px;
   min-width: 100px;
   padding: 10px 14px;
