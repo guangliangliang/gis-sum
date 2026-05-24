@@ -26,6 +26,12 @@ body {
 ::after,
 ::before {
   box-sizing: border-box;
+}
+
+/* 排除 OpenLayers 控件，保留它们的默认 margin 和 padding */
+*:not(.ol-control),
+*:not(.ol-control)::after,
+*:not(.ol-control)::before {
   margin: 0;
   padding: 0;
 }

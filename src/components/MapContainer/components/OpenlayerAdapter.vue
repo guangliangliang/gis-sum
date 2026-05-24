@@ -23,12 +23,13 @@ onMounted(async () => {
 
     // 添加控件
     mapInstance.getControlManager()
-      .addZoomControl()
-      .addFullscreenControl()
-      .addScaleControl()
-      .addBaseMapSwitcherControl({
-        baseMapManager: mapInstance.getBaseMapManager()
-      })
+      .addZoomControl({}, { top: '2.5em', right: '0.5em' })
+      .addFullscreenControl({}, { top: '0.5em', right: '0.5em' })
+      .addScaleControl({}, { bottom: '0.5em', left: '0.5em' })
+      .addBaseMapSwitcherControl(
+        { baseMapManager: mapInstance.getBaseMapManager() },
+        { top: '6.5em', right: '0.5em' }
+      )
 
     // 通知父组件地图已就绪
     emit('map-ready', mapInstance)
@@ -82,5 +83,37 @@ onUnmounted(() => {
 .map-instance {
   width: 100%;
   height: 100%;
+}
+
+/* 确保 OpenLayers 控件样式不受全局重置影响 */
+:deep(.ol-control) {
+  margin: initial !important;
+  padding: initial !important;
+  position: absolute !important;
+}
+
+/* 缩放控件 - 右上角 */
+:deep(.ol-zoom) {
+  top: 2.5em !important;
+  right: 0.5em !important;
+  left: auto !important;
+}
+
+/* 全屏控件 */
+:deep(.ol-full-screen) {
+  top: 0.5em;
+  right: 0.5em;
+}
+
+/* 比例尺控件 */
+:deep(.ol-scale-line) {
+  bottom: 0.5em;
+  left: 0.5em;
+}
+
+/* 底图切换控件 */
+:deep(.ol-base-map-switcher) {
+  top: 6.5em !important;
+  right: 0.5em !important;
 }
 </style>
